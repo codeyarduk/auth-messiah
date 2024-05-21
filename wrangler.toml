@@ -3,3 +3,8 @@ name = "globalauth"
 main = "src/index.js"
 compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "linkest-users"
+database_id = "1952cfd1-912e-4954-8550-f73a85da3087"
