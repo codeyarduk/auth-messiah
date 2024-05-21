@@ -8,8 +8,17 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-export default {
-	async fetch(request, env, ctx) {
-		return new Response('Hello World!');
-	},
-};
+import { Hono } from 'hono';
+import logger from '../middleware/auth';
+const app = new Hono();
+
+app.use('/', logger);
+app.get('/', (c) => {
+	return c.text('Hello Worl!');
+});
+
+app.get('/json', (c) => {
+	return c.json({ message: 'Hello World!' });
+});
+
+export default app;
