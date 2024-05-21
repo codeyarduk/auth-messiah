@@ -10,9 +10,14 @@
 
 import { Hono } from 'hono';
 import logger from '../middleware/auth';
+import login from '../routes/login';
+
 const app = new Hono();
 
 app.use('/', logger);
+
+app.route('/', login);
+
 app.get('/', (c) => {
 	return c.text('Hello Worl!');
 });
