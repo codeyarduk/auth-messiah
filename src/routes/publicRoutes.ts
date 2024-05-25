@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { Bindings } from '../app.d.ts';
 import { generateId } from 'lucia';
-import { Scrypt } from 'lucia';
+import { verifyPassword, hashPassword } from '../functions/hashing';
+
 const publicRoutes = new Hono<{ Bindings: Bindings }>();
 
 publicRoutes.get('/login', (c) => {
@@ -27,11 +28,12 @@ publicRoutes.post(
 		}
 		// Inserts the user into the database if the user does not exist
 		try {
-			const hashedPassword = await new Scrypt().hash(password);
+			const hashResult = await hashPassword(password);
+
 			const userId = generateId(15);
 
 			const insertedUser = await c.env.DB.prepare(`INSERT INTO users (id, email, password) VALUES (?, ?, ?);`)
-				.bind(userId, email, hashedPassword)
+				.bind(userId, email, hashResult)
 				.run();
 			console.log(insertedUser);
 			const session = await lucia.createSession(userId, {});
@@ -48,7 +50,7 @@ publicRoutes.post(
 			console.log(err);
 			return c.json('Error while registering user', 400);
 		}
-	}
+	},
 );
 
 export { publicRoutes };
