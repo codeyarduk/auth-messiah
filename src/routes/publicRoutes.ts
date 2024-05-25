@@ -9,35 +9,6 @@ import { verifyPassword, hashPassword } from '../functions/hashing';
 const publicRoutes = new Hono<{ Bindings: Bindings }>();
 
 publicRoutes.post(
-	'/login',
-	zValidator('json', z.object({ email: z.string().min(1).email(), password: z.string().min(1).max(255) })),
-	async (c) => {
-		const { email, password } = await c.req.json();
-		const lucia = initializeLucia(c.env.DB);
-
-		const user = (await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).run()) as any;
-		console.log(user);
-		const userId = user.results[0]?.id;
-		if (!userId) {
-			return c.json('Invalid email or password', 400);
-		}
-		const validPassword = await verifyPassword(user.results[0].password, password);
-
-		if (!validPassword) {
-			return c.json('Invalid email or password', 400);
-		}
-		const session = await lucia.createSession(userId, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
-
-		c.header('Set-Cookie', sessionCookie.serialize(), {
-			append: true,
-		});
-
-		return c.json('User Verified and logged in');
-	},
-);
-
-publicRoutes.post(
 	'/register',
 	zValidator('json', z.object({ email: z.string().min(1).email(), password: z.string().min(1).max(255) })),
 	async (c) => {
@@ -78,4 +49,45 @@ publicRoutes.post(
 	},
 );
 
+publicRoutes.post(
+	'/login',
+	zValidator('json', z.object({ email: z.string().min(1).email(), password: z.string().min(1).max(255) })),
+	async (c) => {
+		const { email, password } = await c.req.json();
+		const lucia = initializeLucia(c.env.DB);
+
+		const user = (await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).run()) as any;
+		console.log(user);
+		const userId = user.results[0]?.id;
+		if (!userId) {
+			return c.json('Invalid email or password', 400);
+		}
+		const validPassword = await verifyPassword(user.results[0].password, password);
+
+		if (!validPassword) {
+			return c.json('Invalid email or password', 400);
+		}
+		const session = await lucia.createSession(userId, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+
+		c.header('Set-Cookie', sessionCookie.serialize(), {
+			append: true,
+		});
+
+		return c.json('User Verified and logged in');
+	},
+);
+
+publicRoutes.post('/logout', async (c) => {
+	const lucia = initializeLucia(c.env.DB);
+	const session = c.get('session');
+	if (session) {
+		await lucia.invalidateSession(session.id);
+	}
+	const sessionCookie = lucia.createBlankSessionCookie();
+	c.header('Set-Cookie', sessionCookie.serialize(), {
+		append: true,
+	});
+	return c.json('Logged out');
+});
 export { publicRoutes };
