@@ -2,7 +2,7 @@
 /// <reference types="lucia" />
 
 declare namespace Lucia {
-	type Auth = import('./lucia.ts').Auth;
+	type Auth = import('./functions/lucia.ts').Auth;
 	type DatabaseUserAttributes = {};
 	type DatabaseSessionAttributes = {};
 }
