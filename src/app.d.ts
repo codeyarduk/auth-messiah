@@ -6,3 +6,7 @@ declare namespace Lucia {
 	type DatabaseUserAttributes = {};
 	type DatabaseSessionAttributes = {};
 }
+
+export type Bindings = {
+	DB: D1Database;
+};
