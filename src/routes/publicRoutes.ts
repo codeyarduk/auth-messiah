@@ -46,7 +46,7 @@ publicRoutes.post(
 			console.log(err);
 			return c.json('Error while registering user', 400);
 		}
-	},
+	}
 );
 
 publicRoutes.post(
@@ -73,21 +73,22 @@ publicRoutes.post(
 		c.header('Set-Cookie', sessionCookie.serialize(), {
 			append: true,
 		});
-
-		return c.json('User Verified and logged in');
-	},
+		// console.log(sessionCookie);
+		return c.json(`User Verified and logged in ${sessionCookie}`);
+		// return c.redirect('/');
+	}
 );
 
 publicRoutes.post('/logout', async (c) => {
 	const lucia = initializeLucia(c.env.DB);
-	const session = c.get('session');
+	const session = c.get('session') as any;
 	if (session) {
 		await lucia.invalidateSession(session.id);
 	}
 	const sessionCookie = lucia.createBlankSessionCookie();
-	c.header('Set-Cookie', sessionCookie.serialize(), {
+	return c.header('Set-Cookie', sessionCookie.serialize(), {
 		append: true,
 	});
-	return c.json('Logged out');
+	// return c.json('Logged out');
 });
 export { publicRoutes };
