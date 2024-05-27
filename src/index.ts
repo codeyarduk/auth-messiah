@@ -7,6 +7,7 @@ import { loginCheck } from './middleware/loginCheck';
 import { register } from './routes/register';
 import { login } from './routes/login';
 import { logout } from './routes/logout';
+import { logoutAll } from './routes/logoutAll';
 
 const app = new Hono();
 
@@ -27,5 +28,6 @@ app.use('/*', loginCheck);
 app.route('/register', register);
 app.route('/login', login);
 app.route('/logout', logout);
+app.route('/logout', logoutAll);
 
 export default app;
