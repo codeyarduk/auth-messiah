@@ -2,10 +2,12 @@ import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
-import { authMiddleware } from './middleware/loginCheck';
+import { loginCheck } from './middleware/loginCheck';
 
-import { publicRoutes } from './routes/publicRoutes';
-import { privateRoutes } from './routes/privateRoutes';
+import { register } from './routes/register';
+import { login } from './routes/login';
+import { logout } from './routes/logout';
+
 const app = new Hono();
 
 app.use(
@@ -16,14 +18,14 @@ app.use(
 		exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 		maxAge: 600,
 		credentials: true,
-	})
+	}),
 );
 app.use(logger());
 app.use(csrf());
-app.use('/private/*', authMiddleware);
-app.use('/*', authMiddleware);
+app.use('/*', loginCheck);
 
-app.route('/', publicRoutes);
-app.route('/private', privateRoutes);
+app.route('/register', register);
+app.route('/login', login);
+app.route('/logout', logout);
 
 export default app;

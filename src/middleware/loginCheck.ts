@@ -2,7 +2,7 @@ import { initializeLucia } from '../functions/lucia';
 import { getCookie } from 'hono/cookie';
 import { Context, Next } from 'hono';
 
-export async function authMiddleware(c: Context, next: Next) {
+export async function loginCheck(c: Context, next: Next) {
 	console.log('Auth Middleware');
 	const lucia = initializeLucia(c.env.DB);
 
