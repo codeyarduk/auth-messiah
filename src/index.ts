@@ -8,19 +8,20 @@ import { publicRoutes } from './routes/publicRoutes';
 import { privateRoutes } from './routes/privateRoutes';
 const app = new Hono();
 
-app.use(logger());
-app.use('/private/*', authMiddleware);
 app.use(
 	cors({
 		origin: 'http://localhost:5173',
-		allowHeaders: ['Content-Type', 'X-Custom-Header', 'Upgrade-Insecure-Requests'],
+		allowHeaders: ['Content-Type', 'X-Custom-Header', 'Upgrade-Insecure-Requests', 'Access-Control-Allow-Origin'],
 		allowMethods: ['POST', 'GET', 'OPTIONS'],
 		exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 		maxAge: 600,
 		credentials: true,
 	})
 );
+app.use(logger());
 app.use(csrf());
+app.use('/private/*', authMiddleware);
+app.use('/*', authMiddleware);
 
 app.route('/', publicRoutes);
 app.route('/private', privateRoutes);

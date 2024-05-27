@@ -22,11 +22,13 @@ export async function authMiddleware(c: Context, next: Next) {
 
 	const { user, session } = await lucia.validateSession(sessionId);
 	console.log('User:', user);
-	if (session && session.fresh) {
+	if (session) {
+		console.log('Session fresh, and reset');
 		c.header('Set-Cookie', lucia.createSessionCookie(sessionId).serialize(), {
 			append: true,
 		});
-		console.log('Session fresh, and reset');
+		// c.status(200);
+		return c.json('User already exists, and has been logged in.', 200);
 	}
 
 	if (!session) {
@@ -36,6 +38,7 @@ export async function authMiddleware(c: Context, next: Next) {
 		console.log('No session');
 		c.status(400);
 	}
+
 	console.log('Session:', session);
 	c.set('user', user);
 	c.set('session', session);
