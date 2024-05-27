@@ -4,7 +4,7 @@ import type { Bindings } from '../app.d.ts';
 
 const logout = new Hono<{ Bindings: Bindings }>();
 
-logout.post('/logout', async (c) => {
+logout.post('/', async (c) => {
 	const lucia = initializeLucia(c.env.DB);
 	const session = c.get('session') as any;
 	if (session) {
