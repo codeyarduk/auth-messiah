@@ -2,8 +2,9 @@ import { Hono } from 'hono';
 import { initializeLucia } from '../functions/lucia';
 import type { Bindings } from '../app.d.ts';
 import { Context } from 'hono';
+import type { User, Session } from 'lucia';
 
-const logoutAll = new Hono<{ Bindings: Bindings }>();
+const logoutAll = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
 
 logoutAll.post('/', async (c: Context) => {
 	const lucia = initializeLucia(c.env.DB);
