@@ -11,10 +11,10 @@ logoutAll.post('/', async (c) => {
 		await lucia.invalidateUserSessions(session.user_id);
 	}
 	const sessionCookie = lucia.createBlankSessionCookie();
-	return c.header('Set-Cookie', sessionCookie.serialize(), {
+	c.header('Set-Cookie', sessionCookie.serialize(), {
 		append: true,
 	});
-	// return c.json('Logged out');
+	return c.json('Logged out all sessions');
 });
 
 export { logoutAll };

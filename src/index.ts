@@ -3,6 +3,7 @@ import { logger } from 'hono/logger';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 import { loginCheck } from './middleware/loginCheck';
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
 
 import { register } from './routes/register';
 import { login } from './routes/login';
@@ -19,15 +20,17 @@ app.use(
 		exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 		maxAge: 600,
 		credentials: true,
-	}),
+	})
 );
 app.use(logger());
 app.use(csrf());
-app.use('/*', loginCheck);
+app.use(rateLimiterMiddleware);
+app.use('/login', loginCheck);
+app.use('/register', loginCheck);
 
 app.route('/register', register);
 app.route('/login', login);
 app.route('/logout', logout);
-app.route('/logout', logoutAll);
+app.route('/logoutsessions', logoutAll);
 
 export default app;
