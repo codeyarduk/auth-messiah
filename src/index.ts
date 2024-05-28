@@ -8,6 +8,7 @@ import { register } from './routes/register';
 import { login } from './routes/login';
 import { logout } from './routes/logout';
 import { logoutAll } from './routes/logoutAll';
+import { verifyEmail } from './routes/emailVerification';
 
 const app = new Hono();
 
@@ -29,5 +30,6 @@ app.route('/register', register);
 app.route('/login', login);
 app.route('/logout', logout);
 app.route('/logout', logoutAll);
+app.route('/verify-email', verifyEmail);
 
 export default app;
