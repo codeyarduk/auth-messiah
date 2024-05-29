@@ -19,3 +19,28 @@ The ideal use would be using iframe's in your project similar to how Auth0 works
 #### Install Process
 
 coming soon... (I need to take the time to make it reproducable)
+
+
+#### Database Schema
+
+create table users
+(
+    id    TEXT not null primary key,
+    email TEXT not null unique,
+    password TEXT
+    email_verified BOOLEAN DEFAULT false
+);
+create table sessions
+(
+    id         TEXT    not null primary key,
+    expires_at INTEGER not null,
+    user_id    TEXT    not null
+);
+create table email_verification_codes
+(
+    id    INTEGER not null primary key AUTOINCREMENT,
+    email TEXT,
+    user_id TEXT unique,
+    code TEXT,
+    expires_at TEXT
+);
