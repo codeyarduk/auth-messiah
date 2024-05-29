@@ -13,11 +13,11 @@ export default function Layout({ children, isLoggedIn = false }: LayoutProps) {
 					crossorigin="anonymous"
 				/>
 				<script src="https://cdn.tailwindcss.com"></script>
-				<title>Subscribe to CodeBrew!</title>
+				<title>Rabbit Auth</title>
 			</head>
-			<body class="w-[75%] m-auto justify-center bg-gray-800 dark:text-white">
+			<body class="w-[100%] m-auto justify-center">
 				<header></header>
-				<content>{children}</content>
+				<main>{children}</main>
 			</body>
 		</html>
 	);

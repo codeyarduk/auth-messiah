@@ -12,7 +12,7 @@ verifyEmail.post(
 		'form',
 		z.object({
 			code: z.string().min(1),
-		}),
+		})
 	),
 	async (c) => {
 		const user = c.get('user') as any;
@@ -35,7 +35,7 @@ verifyEmail.post(
 			append: true,
 		});
 		return c.redirect('/');
-	},
+	}
 );
 
 export { verifyEmail };

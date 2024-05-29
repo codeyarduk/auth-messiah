@@ -2,29 +2,44 @@ import Button from './Button';
 import Input from './Input';
 
 type AuthFormProps = {
-	description: string;
 	action: 'Log in' | 'Sign up';
+	queryParameters: {
+		emailOrPasswordFail?: string;
+		sanitiseFail?: string;
+	};
 };
 
-export function AuthForm({ description, action }: AuthFormProps) {
-	const targetUrl = `/api/auth/${action === 'Log in' ? 'login' : 'signup'}`;
+export async function AuthForm({ action, queryParameters }: AuthFormProps) {
+	const targetUrl = `/api/${action === 'Log in' ? 'login' : 'register'}`;
+	console.log('TARGET:', targetUrl);
+	console.log('QUERY:', queryParameters);
 
 	return (
-		<form class="w-full max-w-sm pt-8" method="POST" action={targetUrl}>
-			<div class="mb-8">
-				<h1 className="text-2xl">{action}</h1>
-				<p>{description}</p>
+		<form class="" method="POST" action={targetUrl}>
+			<div class="">
+				<img src="../../../public/icons/codeyard-logo.svg" />
+				<h1 className="text-[30px] mb-6 text-center font-bold">Welcome back!</h1>
 			</div>
-			<div className="grid gap-4">
-				<div className="grid gap-2">
-					<Input name="email" placeholder="Email" label="email" type="text" hasBottomMargin required />
+			<div className="">
+				<div className="">
+					<Input name="email" placeholder="Email" label="Email" type="text" required />
 				</div>
-				<div className="grid gap-2">
-					<Input name="password" placeholder="Password" label="password" type="password" hasBottomMargin required />
+
+				<div className="">
+					<Input name="password" placeholder="Password" label="Password" type="password" hasBottomMargin required />
 				</div>
 			</div>
 			<div>
 				<Button type="submit" text={action} />
+			</div>
+			{queryParameters.emailOrPasswordFail === 'failed' && <p class="text-red-500">Invalid email or password</p>}
+			{queryParameters.sanitiseFail === 'failed' && <p class="text-red-500">Invalid email or password</p>}
+
+			<div>
+				<p className="text-sm text-center max-w-[300px]">
+					By signing up, you agree to our <span className="text-green-600 hover:cursor-pointer hover:underline">Terms of Service</span> and{' '}
+					<span className="text-green-600 hover:cursor-pointer hover:underline">Privacy Policy</span>
+				</p>
 			</div>
 		</form>
 	);
