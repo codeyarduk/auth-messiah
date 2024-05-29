@@ -11,6 +11,8 @@ import { logout } from './routes/logout';
 import { logoutAll } from './routes/logoutAll';
 import { verifyEmail } from './routes/emailVerification';
 
+import Top from './views/layout';
+
 const app = new Hono();
 
 app.use(
@@ -32,7 +34,12 @@ app.use('/register', loginCheck);
 app.route('/register', register);
 app.route('/login', login);
 app.route('/logout', logout);
-app.route('/logoutsessions', logoutAll);
+app.route('/logout-sessions', logoutAll);
 app.route('/verify-email', verifyEmail);
+
+app.get('/', (c) => {
+	const messages = ['Good Morning', 'Good Evening', 'Good Night'];
+	return c.html(<Top messages={messages} />);
+});
 
 export default app;
