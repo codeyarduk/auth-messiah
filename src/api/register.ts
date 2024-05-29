@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { zValidator } from '@hono/zod-validator';
 import { initializeLucia } from '../functions/lucia';
 import { generateId } from 'lucia';
 import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
+import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -31,7 +31,7 @@ register.post(
 	async (c) => {
 		const lucia = initializeLucia(c.env.DB);
 
-		const { email, password } = await c.req.valid('form');
+		const { email, password } = c.req.valid('form');
 		// Checks if the user already exists
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 
@@ -46,10 +46,14 @@ register.post(
 
 			const userId = generateId(15);
 
-			const insertedUser = await c.env.DB.prepare(`INSERT INTO users (id, email, password) VALUES (?, ?, ?) returning *`)
-				.bind(userId, email, hashResult)
+			const insertedUser = await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
+				.bind(userId, email, hashResult, false)
 				.first();
 			console.log(insertedUser);
+
+			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
+			console.log('This is the verification code:' + verificationCode);
+
 			const session = await lucia.createSession(userId, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
 
@@ -64,7 +68,7 @@ register.post(
 			console.log(err);
 			return c.json('Error while registering user', 400);
 		}
-	}
+	},
 );
 
 export { register };
