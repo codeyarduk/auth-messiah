@@ -11,9 +11,9 @@ import { logout } from './routes/logout';
 import { logoutAll } from './routes/logoutAll';
 import { verifyEmail } from './routes/emailVerification';
 
-const app = new Hono();
+const api = new Hono();
 
-app.use(
+api.use(
 	cors({
 		origin: 'http://localhost:5173',
 		allowHeaders: ['Content-Type', 'X-Custom-Header', 'Upgrade-Insecure-Requests', 'Access-Control-Allow-Origin'],
@@ -23,16 +23,16 @@ app.use(
 		credentials: true,
 	})
 );
-app.use(logger());
-app.use(csrf());
-app.use(rateLimiterMiddleware);
-app.use('/login', loginCheck);
-app.use('/register', loginCheck);
+api.use(logger());
+api.use(csrf());
+api.use(rateLimiterMiddleware);
+api.use('/login', loginCheck);
+api.use('/register', loginCheck);
 
-app.route('/register', register);
-app.route('/login', login);
-app.route('/logout', logout);
-app.route('/logout-sessions', logoutAll);
-app.route('/verify-email', verifyEmail);
+api.route('/register', register);
+api.route('/login', login);
+api.route('/logout', logout);
+api.route('/logout-sessions', logoutAll);
+api.route('/verify-email', verifyEmail);
 
-export default app;
+export default api;

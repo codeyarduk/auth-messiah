@@ -5,8 +5,6 @@ import { zValidator } from '@hono/zod-validator';
 import { verifyPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app';
 
-import LogIn from '../views/pages/login';
-
 const login = new Hono<{ Bindings: Bindings }>();
 
 login.post('/', zValidator('json', z.object({ email: z.string().min(1).email(), password: z.string().min(1).max(255) })), async (c) => {
