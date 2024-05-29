@@ -3,7 +3,9 @@ import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { verifyPassword } from '../functions/hashing';
-import type { Bindings, UserTable } from '../app.d.ts';
+import type { Bindings, UserTable } from '../app';
+
+import LogIn from '../views/pages/login';
 
 const login = new Hono<{ Bindings: Bindings }>();
 
