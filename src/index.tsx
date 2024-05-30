@@ -7,6 +7,8 @@ import { Context } from 'hono';
 import { loginCheck } from './middleware/loginCheck';
 
 import Login from './views/pages/Login';
+import Profile from './views/pages/Profile';
+import Register from './views/pages/Register';
 
 import api from './api';
 
@@ -39,6 +41,15 @@ app.get('/login', (c: Context) => {
 	};
 
 	return c.html(<Login queryParameters={queryParameters} />);
+});
+
+app.get('/profile', (c: Context) => {
+	return c.html(<Profile />);
+});
+
+app.get('/register', (c: Context) => {
+	return c.html(<Register />);
+	// return c.json('Register page is not available yet.');
 });
 
 export default app;

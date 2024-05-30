@@ -29,7 +29,7 @@ export async function loginCheck(c: Context, next: Next) {
 		});
 		// c.status(200);
 		// return c.json('User already exists, and has been logged in.', 200);
-		return c.redirect('https://apple.com');
+		return c.redirect('http://localhost:53844/profile');
 	}
 
 	if (!session) {
