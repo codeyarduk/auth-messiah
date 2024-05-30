@@ -4,8 +4,9 @@ import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import type { Bindings } from '../app.d.ts';
+import type { User, Session } from 'lucia';
 
-const verifyEmail = new Hono<{ Bindings: Bindings }>();
+const verifyEmail = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
 verifyEmail.post(
 	'/email-verification',
 	zValidator(
