@@ -2,16 +2,16 @@ import Button from './Button';
 import Input from './Input';
 import SocialButton from './SocialButton';
 
-type AuthFormProps = {
-	action: 'Log in' | 'Sign up';
+type RegisterFormProps = {
+	action: 'Register';
 	queryParameters: {
 		emailOrPasswordFail?: string;
 		sanitiseFail?: string;
 	};
 };
 
-export async function AuthForm({ action, queryParameters }: AuthFormProps) {
-	const targetUrl = `/api/${action === 'Log in' ? 'login' : 'register'}`;
+export async function RegisterForm({ action, queryParameters }: RegisterFormProps) {
+	const targetUrl = `/api/register`;
 	console.log('TARGET:', targetUrl);
 	console.log('QUERY:', queryParameters);
 
@@ -22,15 +22,22 @@ export async function AuthForm({ action, queryParameters }: AuthFormProps) {
 			</div>
 			<div>
 				<div class="">
-					<h1 className="text-[30px] mb-6 text-center font-bold">Welcome back!</h1>
+					<h1 className="text-[30px] mb-6 text-center font-bold">Welcome to the team!</h1>
 				</div>
 				<div className="">
+					<div className="flex flex row gap-2">
+						<Input name="first_name" placeholder="First Name*" label="First Name" type="text" />
+						<Input name="last_name" placeholder="Last Name*" label="Last Name" type="text" />
+					</div>
 					<div className="">
-						<Input name="email" placeholder="Email" label="Email" type="text" />
+						<Input name="email" placeholder="Email*" label="Email" type="text" />
 					</div>
 
 					<div className="">
-						<Input name="password" placeholder="Password" label="Password" type="password" hasBottomMargin />
+						<Input name="password" placeholder="Password*" label="Password" type="password" />
+					</div>
+					<div className="">
+						<Input name="confirm_password" placeholder="Confirm password*" label="Password" type="password" hasBottomMargin />
 					</div>
 				</div>
 				{queryParameters.emailOrPasswordFail === 'failed' && <p class="text-red-500 mb-2">Invalid email or password</p>}
@@ -40,9 +47,9 @@ export async function AuthForm({ action, queryParameters }: AuthFormProps) {
 				</div>
 				<div className="py-5 text-center text-sm mt-2 mb-2">
 					<p>
-						Don't have an account?{' '}
+						Have an account?{' '}
 						<span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">
-							<a href="/register">Sign up</a>
+							<a href="/login">Login</a>
 						</span>
 					</p>
 				</div>

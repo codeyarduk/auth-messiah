@@ -48,7 +48,15 @@ app.get('/profile', (c: Context) => {
 });
 
 app.get('/register', (c: Context) => {
-	return c.html(<Register />);
+	const emailOrPasswordFail = c.req.query('auth');
+	const sanitiseFail = c.req.query('content');
+
+	const queryParameters = {
+		emailOrPasswordFail: emailOrPasswordFail,
+		sanitiseFail: sanitiseFail,
+	};
+
+	return c.html(<Register queryParameters={queryParameters} />);
 	// return c.json('Register page is not available yet.');
 });
 

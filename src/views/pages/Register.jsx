@@ -1,11 +1,11 @@
-import { AuthForm } from '../components/AuthForm';
+import { RegisterForm } from '../components/RegisterForm';
 import Layout from '../layout';
 
-export default function register() {
+export default function register({ queryParameters }) {
 	return (
 		<Layout>
 			<div class="flex justify-center">
-				<h1>Hi hi</h1>
+				<RegisterForm action="Register" queryParameters={queryParameters} />
 			</div>
 		</Layout>
 	);
