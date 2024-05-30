@@ -26,8 +26,8 @@ export async function RegisterForm({ action, queryParameters }: RegisterFormProp
 				</div>
 				<div className="">
 					<div className="flex flex row gap-2">
-						<Input name="first_name" placeholder="First Name*" label="First Name" type="text" />
-						<Input name="last_name" placeholder="Last Name*" label="Last Name" type="text" />
+						<Input name="firstName" placeholder="First Name*" label="First Name" type="text" />
+						<Input name="lastName" placeholder="Last Name*" label="Last Name" type="text" />
 					</div>
 					<div className="">
 						<Input name="email" placeholder="Email*" label="Email" type="text" />
@@ -37,7 +37,7 @@ export async function RegisterForm({ action, queryParameters }: RegisterFormProp
 						<Input name="password" placeholder="Password*" label="Password" type="password" />
 					</div>
 					<div className="">
-						<Input name="confirm_password" placeholder="Confirm password*" label="Password" type="password" hasBottomMargin />
+						<Input name="confirmedPassword" placeholder="Confirm password*" label="Password" type="password" hasBottomMargin />
 					</div>
 				</div>
 				{queryParameters.emailOrPasswordFail === 'failed' && <p class="text-red-500 mb-2">Invalid email or password</p>}

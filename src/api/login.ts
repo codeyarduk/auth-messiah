@@ -47,7 +47,7 @@ login.post(
 		});
 		// console.log(sessionCookie);
 		// return c.json(`User Verified and logged in ${sessionCookie}`);
-		return c.redirect('https://apple.com');
+		return c.redirect('http://localhost:53844/profile');
 	}
 );
 
