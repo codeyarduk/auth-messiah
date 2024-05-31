@@ -4,7 +4,7 @@ const resend = new Resend('re_7pQyzmoh_427vjGkt2TL2WFJSngzsfFjS');
 
 const sendEmailOrLog = async (recipient: string, subject: string, content: string) => {
 	const { data, error } = await resend.emails.send({
-		from: 'auth@codeyard.co.uk',
+		from: 'verify@auth.codeyard.co.uk',
 		to: recipient,
 		subject: subject,
 		html: `<div>${content}</div>`,
