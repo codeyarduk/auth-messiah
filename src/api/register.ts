@@ -64,7 +64,7 @@ register.post(
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
-			await sendEmailOrLog(email, 'Welcome, verification email', 'Your verfication code is ' + verificationCode);
+			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
 
 			const session = await lucia.createSession(userId, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
