@@ -6,6 +6,7 @@ import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
 import { generateEmailVerificationCode } from '../functions/generateEmailCode';
+import { sendEmailOrLog } from '../functions/sendEmailOrLog';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -53,6 +54,8 @@ register.post(
 
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
+
+			await sendEmailOrLog(email, 'Welcome, verification email', 'Your verfication code is ' + verificationCode);
 
 			const session = await lucia.createSession(userId, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
