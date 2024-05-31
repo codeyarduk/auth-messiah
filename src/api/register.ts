@@ -73,7 +73,7 @@ register.post(
 				append: true,
 			});
 
-			return c.json('User registered successfully');
+			return c.redirect('/verify');
 		} catch (err) {
 			console.log(err);
 			return c.json('Error while registering user', 400);

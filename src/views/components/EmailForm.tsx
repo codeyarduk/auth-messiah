@@ -10,18 +10,22 @@ type EmailFormProps = {
 };
 
 export async function EmailForm({ action, queryParameters }: EmailFormProps) {
-	const targetUrl = `/api/verify-email}`;
+	const targetUrl = `/api/verify-email`;
 	console.log('TARGET:', targetUrl);
 	console.log('QUERY:', queryParameters);
 
 	return (
-		<form class="h-screen justify-between flex flex-col py-16" method="POST" action={targetUrl}>
+		<form class="h-screen flex flex-col py-16" method="POST" action={targetUrl}>
 			<div className="w-full flex items-center justify-center">
 				<img src="https://i.imgur.com/KLaDLBx.png" width="64" height="64" className="" />
 			</div>
 			<div>
 				<div class="">
 					<h1 className="text-[30px] mb-6 text-center font-bold">Verify your email</h1>
+				</div>
+				<div class="">
+					<h1 className="text-[16px] w-80 mb-6 text-center">A code has been sent to your inbox. </h1>
+					<h1 className="text-[16px] w-80 mb-6 text-center">Enter the 6 digit verification code below</h1>
 				</div>
 				<div className="">
 					<div className="">
