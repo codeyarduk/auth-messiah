@@ -6,7 +6,7 @@ async function generateEmailVerificationCode(db: D1Database, userId: string, ema
 	console.log('Deleting old email codes');
 	await db.prepare('delete from email_verification_codes where user_id = ?').bind(userId).run();
 	console.log('Old code deleted');
-	const code = generateRandomString(8, alphabet('0-9'));
+	const code = generateRandomString(6, alphabet('0-9'));
 
 	console.log('inserting new code');
 	await db
