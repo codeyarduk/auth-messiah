@@ -9,6 +9,7 @@ import { loginCheck } from './middleware/loginCheck';
 import Login from './views/pages/Login';
 import Profile from './views/pages/Profile';
 import Register from './views/pages/Register';
+import EmailCode from './views/pages/VerifyEmail';
 
 import api from './api';
 
@@ -22,7 +23,7 @@ app.use(
 		exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 		maxAge: 600,
 		credentials: true,
-	})
+	}),
 );
 app.use(logger());
 app.use(csrf());
@@ -58,6 +59,17 @@ app.get('/register', (c: Context) => {
 
 	return c.html(<Register queryParameters={queryParameters} />);
 	// return c.json('Register page is not available yet.');
+});
+
+app.get('/verify', (c: Context) => {
+	const invalidCode = c.req.query('code');
+	const sanitiseFail = c.req.query('code');
+
+	const queryParameters = {
+		invalidCode: invalidCode,
+		sanitiseFail: sanitiseFail,
+	};
+	return c.html(<EmailCode queryParameters={queryParameters} />);
 });
 
 export default app;

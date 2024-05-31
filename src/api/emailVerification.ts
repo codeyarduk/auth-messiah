@@ -2,28 +2,34 @@ import { Hono } from 'hono';
 import { verifyVerificationCode } from '../functions/verifyEmailCode';
 import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
-import { zValidator } from '@hono/zod-validator';
+import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
 import type { User, Session } from 'lucia';
 
+const codeSchema = z.object({
+	code: z.string().min(1),
+});
+
 const verifyEmail = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
+
 verifyEmail.post(
-	'/email-verification',
-	zValidator(
-		'form',
-		z.object({
-			code: z.string().min(1),
-		})
-	),
+	'/',
+	validator('form', (value, c) => {
+		const parsed = codeSchema.safeParse(value);
+		if (!parsed.success) {
+			return c.redirect('/verify-email?code=failed');
+		}
+		return parsed.data;
+	}),
 	async (c) => {
 		const user = c.get('user') as any;
 		const { code } = c.req.valid('form');
 		if (!user) {
-			return c.body(null, 400);
+			return c.redirect('/verify-email?code=failed');
 		}
 		const validCode = await verifyVerificationCode(c.env.DB, user, code);
 		if (!validCode) {
-			return c.body(null, 400);
+			return c.redirect('/verify-email?code=failed');
 		}
 
 		const lucia = initializeLucia(c.env.DB);
@@ -36,7 +42,7 @@ verifyEmail.post(
 			append: true,
 		});
 		return c.redirect('/');
-	}
+	},
 );
 
 export { verifyEmail };

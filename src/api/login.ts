@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
-import { zValidator } from '@hono/zod-validator';
 import { verifyPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app';
 import { validator } from 'hono/validator';
@@ -23,7 +22,7 @@ login.post(
 		return parsed.data;
 	}),
 	async (c) => {
-		const { email, password } = await c.req.valid('form');
+		const { email, password } = c.req.valid('form');
 		const lucia = initializeLucia(c.env.DB);
 
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
@@ -48,7 +47,7 @@ login.post(
 		// console.log(sessionCookie);
 		// return c.json(`User Verified and logged in ${sessionCookie}`);
 		return c.redirect('http://localhost:53844/profile');
-	}
+	},
 );
 
 
