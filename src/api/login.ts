@@ -46,7 +46,7 @@ login.post(
 		});
 		// console.log(sessionCookie);
 		// return c.json(`User Verified and logged in ${sessionCookie}`);
-		return c.redirect('http://localhost:53844/profile');
+		return c.redirect('/profile');
 	},
 );
 

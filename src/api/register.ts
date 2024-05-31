@@ -66,7 +66,7 @@ register.post(
 
 			// return c.json(`This is the email: ${email} This is the password: ${password}`);
 			// return c.redirect('/');
-			return c.json('User registered successfully');
+			return c.redirect('/verify');
 		} catch (err) {
 			console.log(err);
 			return c.json('Error while registering user', 400);

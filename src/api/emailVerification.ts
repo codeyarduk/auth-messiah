@@ -17,7 +17,7 @@ verifyEmail.post(
 	validator('form', (value, c) => {
 		const parsed = codeSchema.safeParse(value);
 		if (!parsed.success) {
-			return c.redirect('/verify-email?code=failed');
+			return c.redirect('/verify-email?parse=failed');
 		}
 		return parsed.data;
 	}),
@@ -25,7 +25,7 @@ verifyEmail.post(
 		const user = c.get('user') as any;
 		const { code } = c.req.valid('form');
 		if (!user) {
-			return c.redirect('/verify-email?code=failed');
+			return c.redirect('/verify-email?user=failed');
 		}
 		const validCode = await verifyVerificationCode(c.env.DB, user, code);
 		if (!validCode) {
