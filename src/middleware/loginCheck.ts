@@ -27,9 +27,6 @@ export async function loginCheck(c: Context, next: Next) {
 		c.header('Set-Cookie', lucia.createSessionCookie(sessionId).serialize(), {
 			append: true,
 		});
-		// c.status(200);
-		// return c.json('User already exists, and has been logged in.', 200);
-		return c.redirect('http://localhost:53844/profile');
 	}
 
 	if (!session) {
@@ -37,7 +34,6 @@ export async function loginCheck(c: Context, next: Next) {
 			append: true,
 		});
 		console.log('No session');
-		// c.status(400);
 	}
 
 	console.log('Session:', session);
