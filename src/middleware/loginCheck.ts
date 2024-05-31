@@ -16,7 +16,7 @@ export async function loginCheck(c: Context, next: Next) {
 		console.log('Cookie:', lucia.sessionCookieName);
 		// return c.json('No session ID', 400);
 		// c.throw(400, 'No session ID');
-		c.status(400);
+		// c.status(400);
 		return next();
 	}
 
@@ -28,7 +28,8 @@ export async function loginCheck(c: Context, next: Next) {
 			append: true,
 		});
 		// c.status(200);
-		return c.json('User already exists, and has been logged in.', 200);
+		// return c.json('User already exists, and has been logged in.', 200);
+		return c.redirect('http://localhost:53844/profile');
 	}
 
 	if (!session) {
@@ -36,7 +37,7 @@ export async function loginCheck(c: Context, next: Next) {
 			append: true,
 		});
 		console.log('No session');
-		c.status(400);
+		// c.status(400);
 	}
 
 	console.log('Session:', session);
