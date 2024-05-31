@@ -24,6 +24,7 @@ verifyEmail.post(
 	async (c) => {
 		const user = c.get('user') as any;
 		const { code } = c.req.valid('form');
+		console.log('This is the user:' + user);
 		if (!user) {
 			return c.redirect('/verify-email?user=failed');
 		}

@@ -12,6 +12,7 @@ const api = new Hono();
 
 api.use('/login', loginCheck);
 api.use('/register', loginCheck);
+api.use('/verify-email', loginCheck);
 
 api.route('/register', register);
 api.route('/login', login);
