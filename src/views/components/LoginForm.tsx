@@ -2,7 +2,7 @@ import Button from './Button';
 import Input from './Input';
 import SocialButton from './SocialButton';
 
-type AuthFormProps = {
+type LoginFormProps = {
 	action: 'Log in' | 'Sign up';
 	queryParameters: {
 		emailOrPasswordFail?: string;
@@ -10,7 +10,7 @@ type AuthFormProps = {
 	};
 };
 
-export async function AuthForm({ action, queryParameters }: AuthFormProps) {
+export async function LoginForm({ action, queryParameters }: LoginFormProps) {
 	const targetUrl = `/api/${action === 'Log in' ? 'login' : 'register'}`;
 	console.log('TARGET:', targetUrl);
 	console.log('QUERY:', queryParameters);
