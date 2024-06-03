@@ -66,6 +66,7 @@ register.post(
 			const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
 				.bind(userId, email, secret)
 				.first();
+
 			console.log(insertedToken);
 			// JWT Paylod
 			const payload = {
@@ -76,9 +77,11 @@ register.post(
 
 			const token = await sign(payload, secret);
 
+			console.log('Setting cookie');
 			c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
+			console.log('Set cookie');
 
 			return c.redirect('/verify');
 		} catch (err) {
