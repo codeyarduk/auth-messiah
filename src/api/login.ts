@@ -4,13 +4,17 @@ import { z } from 'zod';
 import { verifyPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app';
 import { validator } from 'hono/validator';
+import { jwt } from 'hono/jwt';
+import type { JwtVariables } from 'hono/jwt';
+import { decode, sign, verify } from 'hono/jwt';
 
 const userSchema = z.object({
 	email: z.string().min(1).email(),
 	password: z.string().min(1).max(255),
 });
+type Variables = JwtVariables;
 
-const login = new Hono<{ Bindings: Bindings }>();
+const login = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 login.post(
 	'/',
@@ -38,14 +42,22 @@ login.post(
 			// return c.json('Invalid email or password', 400);
 			return c.redirect('/login?auth=failed');
 		}
-		const session = await lucia.createSession(userId, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
+		// Generate the JWT and send it in a cookie
+		// Set signing secret/token
+		const secret = '012931n01';
+		// JWT Paylod
+		const payload = {
+			email: user.email,
+			emailVerified: user.email_verified,
+			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // Last value of 30 is days (JWT expires in 30 days)
+		};
 
-		c.header('Set-Cookie', sessionCookie.serialize(), {
+		const token = await sign(payload, secret);
+
+		c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
-		// console.log(sessionCookie);
-		// return c.json(`User Verified and logged in ${sessionCookie}`);
+
 		return c.redirect('/profile');
 	},
 );

@@ -8,6 +8,7 @@ import { validator } from 'hono/validator';
 import generateSigningToken from '../functions/generateSigningToken';
 import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
+import { decode, sign, verify } from 'hono/jwt';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -66,10 +67,19 @@ register.post(
 
 			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
 
-			const session = await lucia.createSession(userId, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
+			// Generate the JWT and send it in a cookie
+			// Set signing secret/token
+			const secret = '012931n01';
+			// JWT Paylod
+			const payload = {
+				email: email,
+				emailVerified: false,
+				exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // Last value of 30 is days (JWT expires in 30 days)
+			};
 
-			c.header('Set-Cookie', sessionCookie.serialize(), {
+			const token = await sign(payload, secret);
+
+			c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
 
