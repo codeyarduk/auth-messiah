@@ -17,4 +17,19 @@ logout.post('/', async (c: Context) => {
 	return c.json('Logged out');
 });
 
+
+
+// login.post('/logout', async (c) => {
+// 	const lucia = initializeLucia(c.env.DB);
+// 	const session = c.get('session');
+// 	if (session) {
+// 		await lucia.invalidateSession(session.id);
+// 	}
+// 	const sessionCookie = lucia.createBlankSessionCookie();
+// 	c.header('Set-Cookie', sessionCookie.serialize(), {
+// 		append: true,
+// 	});
+// 	return c.json('Logged out');
+// });
+
 export { logout };

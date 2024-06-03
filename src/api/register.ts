@@ -6,6 +6,7 @@ import { generateId } from 'lucia';
 import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
+import generateSigningToken from '../functions/generateSigningToken';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -50,6 +51,15 @@ register.post(
 				.bind(userId, email, hashResult)
 				.first();
 			console.log(insertedUser);
+
+			const token = await generateSigningToken();
+			console.log(token);
+
+			const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
+				.bind(userId, email, token)
+				.first();
+			console.log(insertedToken);
+
 			const session = await lucia.createSession(userId, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
 
@@ -57,8 +67,6 @@ register.post(
 				append: true,
 			});
 
-			// return c.json(`This is the email: ${email} This is the password: ${password}`);
-			// return c.redirect('/');
 			return c.json('User registered successfully');
 		} catch (err) {
 			console.log(err);
