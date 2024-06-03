@@ -54,14 +54,6 @@ register.post(
 				.first();
 			console.log(insertedUser);
 
-			const token = generateSigningToken();
-			console.log(token);
-
-			const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
-				.bind(userId, email, token)
-				.first();
-			console.log(insertedToken);
-
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
@@ -69,7 +61,12 @@ register.post(
 
 			// Generate the JWT and send it in a cookie
 			// Set signing secret/token
-			const secret = '012931n01';
+			const secret = generateSigningToken();
+
+			const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
+				.bind(userId, email, secret)
+				.first();
+			console.log(insertedToken);
 			// JWT Paylod
 			const payload = {
 				email: email,
