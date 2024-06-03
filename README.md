@@ -44,3 +44,7 @@ create table email_verification_codes
     code TEXT,
     expires_at TEXT
 );
+
+_Commands to execute to gen tables_
+
+```wrangler d1 execute auth-messiah --command='CREATE TABLE signing_tokens(id TEXT NOT NULL PRIMARY KEY, email TEXT, signing_key TEXT);'     ```
