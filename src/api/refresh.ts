@@ -1,15 +1,14 @@
 import { Hono } from 'hono';
-import type { Bindings } from '../app.d.ts';
-import { Context } from 'hono';
+import type { Bindings, UserTable } from '../app';
 import { verify } from 'hono/jwt';
+import { generateAccessToken } from '../functions/generateAccessToken';
 
 const refresh = new Hono<{ Bindings: Bindings }>();
 
 type SecretKey = string;
 type RefreshToken = string;
-type DecodedPayload = object;
 
-refresh.post('/', async (c: Context) => {
+refresh.post('/', async (c) => {
 	const secretKey: SecretKey = 'test-secret';
 	const refreshToken: RefreshToken | undefined = c.req.header('refresh-token');
 
@@ -24,11 +23,11 @@ refresh.post('/', async (c: Context) => {
 					action: 'Login user to gain a new refresh token',
 				},
 			},
-			401
+			401,
 		);
 	}
 
-	const decodedPayload: DecodedPayload = await verify(refreshToken, secretKey);
+	const decodedPayload = await verify(refreshToken, secretKey);
 
 	if (!decodedPayload) {
 		return c.json(
@@ -41,9 +40,25 @@ refresh.post('/', async (c: Context) => {
 					action: 'Log in user to gain a new refresh token',
 				},
 			},
-			401
+			401,
 		);
 	}
 
+	const email = decodedPayload.email;
+	// Verify Token
+	const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
+
+	if (decodedPayload.tbtr < user.tbtr) {
+		return c.json({ Response: 'Error Token is invalid' });
+	}
+
 	// Logic for creating a new access token should go here
+
+	const accessToken = generateAccessToken(email);
+
+	c.header('Set-Cookie', `jwt=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
+		append: true,
+	});
+
+	return c.json({ response: 'Access Token Returned' });
 });
