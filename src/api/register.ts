@@ -32,8 +32,6 @@ register.post(
 	}),
 
 	async (c) => {
-		const lucia = initializeLucia(c.env.DB);
-
 		const { email, password } = c.req.valid('form');
 		// Checks if the user already exists
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
@@ -61,27 +59,33 @@ register.post(
 
 			// Generate the JWT and send it in a cookie
 			// Set signing secret/token
-			const secret = generateSigningToken();
+			// const secret = generateSigningToken();
 
-			const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
-				.bind(userId, email, secret)
-				.first();
+			// const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
+			// 	.bind(userId, email, secret)
+			// 	.first();
 
-			console.log(insertedToken);
+			// console.log(insertedToken);
+
+			const secret = 'testsecret';
 			// JWT Paylod
-			const payload = {
+			const payloadInput = {
 				email: email,
 				emailVerified: false,
 				exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // Last value of 30 is days (JWT expires in 30 days)
+				tbtr: Math.floor(Date.now() / 1000),
 			};
 
-			const token = await sign(payload, secret);
+			const token = await sign(payloadInput, secret);
 
-			console.log('Setting cookie');
+			// Test decode to view the token
+			// const { header, payload } = decode(token);
+			// console.log('Decoded Header:', header);
+			// console.log('Decoded Payload:', payload);
+
 			c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
-			console.log('Set cookie');
 
 			return c.redirect('/verify');
 		} catch (err) {
