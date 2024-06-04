@@ -1,12 +1,13 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { initializeLucia } from '../functions/lucia';
 import { generateId } from 'lucia';
 import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
 import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
+import { generateRefreshToken } from '../functions/generateRefreshToken';
+import { generateAccessToken } from '../functions/generateAccessToken';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -30,8 +31,6 @@ register.post(
 	}),
 
 	async (c) => {
-		const lucia = initializeLucia(c.env.DB);
-
 		const { email, password } = c.req.valid('form');
 		// Checks if the user already exists
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
@@ -57,15 +56,13 @@ register.post(
 
 			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
 
-			const session = await lucia.createSession(userId, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
+			const verified = true;
+			const refreshToken = generateRefreshToken(email, verified);
+			const accessToken = generateAccessToken(email);
 
-			c.header('Set-Cookie', sessionCookie.serialize(), {
+			c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
-
-			// return c.json(`This is the email: ${email} This is the password: ${password}`);
-			// return c.redirect('/');
 			return c.redirect('/verify');
 		} catch (err) {
 			console.log(err);

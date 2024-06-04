@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { verifyVerificationCode } from '../functions/verifyEmailCode';
-import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
 import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
 import type { User, Session } from 'lucia';
+import { generateAccessToken } from '../functions/generateAccessToken';
+import { generateRefreshToken } from '../functions/generateRefreshToken';
 
 const codeSchema = z.object({
 	code: z.string().min(1),
@@ -22,7 +23,7 @@ verifyEmail.post(
 		return parsed.data;
 	}),
 	async (c) => {
-		const user = c.get('user') as any;
+		const user = c.get('user') as any; // Might have to adjust how user is accessed and use the email in the JWT
 		const { code } = c.req.valid('form');
 		console.log('This is the user:' + user);
 		if (!user) {
@@ -33,15 +34,19 @@ verifyEmail.post(
 			return c.redirect('/verify-email?code=failed');
 		}
 
-		const lucia = initializeLucia(c.env.DB);
-		await lucia.invalidateUserSessions(user.id);
+		// Remove current JWT from the browser
+		c.header('Set-Cookie', 'jwt=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+
 		await c.env.DB.prepare('update users set email_verified = ? where id = ?').bind(true, user.id).run();
 
-		const session = await lucia.createSession(user.id, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
-		c.header('Set-Cookie', sessionCookie.serialize(), {
+		//Set new JWT
+		const refreshToken = generateRefreshToken(user.email, true);
+		const accessToken = generateAccessToken(user.email);
+
+		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
+
 		return c.redirect('/');
 	},
 );

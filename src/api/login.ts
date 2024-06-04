@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
-import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
 import { verifyPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app';
 import { validator } from 'hono/validator';
+import { generateRefreshToken } from '../functions/generateRefreshToken';
+import { generateAccessToken } from '../functions/generateAccessToken';
 
 const userSchema = z.object({
 	email: z.string().min(1).email(),
@@ -23,7 +24,6 @@ login.post(
 	}),
 	async (c) => {
 		const { email, password } = c.req.valid('form');
-		const lucia = initializeLucia(c.env.DB);
 
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 		console.log(user);
@@ -38,14 +38,15 @@ login.post(
 			// return c.json('Invalid email or password', 400);
 			return c.redirect('/login?auth=failed');
 		}
-		const session = await lucia.createSession(userId, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
+		// Generate the JWT and send it in a cookie
+		// Set signing secret/token
 
-		c.header('Set-Cookie', sessionCookie.serialize(), {
+		const refreshToken = generateRefreshToken(email, user.email_verified);
+		const accessToken = generateAccessToken(email);
+
+		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
-		// console.log(sessionCookie);
-		// return c.json(`User Verified and logged in ${sessionCookie}`);
 		return c.redirect('/profile');
 	},
 );
