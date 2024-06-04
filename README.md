@@ -27,14 +27,9 @@ create table users
 (
     id    TEXT not null primary key,
     email TEXT not null unique,
-    password TEXT
-    email_verified BOOLEAN DEFAULT false
-);
-create table sessions
-(
-    id         TEXT    not null primary key,
-    expires_at INTEGER not null,
-    user_id    TEXT    not null
+    password TEXT,
+    email_verified BOOLEAN DEFAULT false,
+    tbtr INTEGER not null,
 );
 create table email_verification_codes
 (
@@ -47,4 +42,12 @@ create table email_verification_codes
 
 _Commands to execute to gen tables_
 
-```wrangler d1 execute auth-messiah --command='CREATE TABLE signing_tokens(id TEXT NOT NULL PRIMARY KEY, email TEXT, signing_key TEXT);'     ```
+Users Table
+
+```wrangler d1 execute auth-messiah --command='CREATE TABLE users (id TEXT NOT NULL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT, email_verified BOOLEAN DEFAULT false, tbtr INTEGER NOT NULL);'```
+
+Email Verification Table
+
+```
+wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
+```
