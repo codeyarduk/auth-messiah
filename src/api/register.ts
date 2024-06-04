@@ -63,7 +63,6 @@ register.post(
 			c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
-
 			return c.redirect('/verify');
 		} catch (err) {
 			console.log(err);

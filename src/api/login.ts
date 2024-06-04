@@ -47,9 +47,6 @@ login.post(
 		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
-
-		// Set the access token
-
 		return c.redirect('/profile');
 	},
 );
