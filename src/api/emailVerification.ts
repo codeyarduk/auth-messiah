@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { verifyVerificationCode } from '../functions/verifyEmailCode';
-import { initializeLucia } from '../functions/lucia';
 import { z } from 'zod';
 import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
 import type { User, Session } from 'lucia';
-import { decode, sign, verify } from 'hono/jwt';
+import { generateAccessToken } from '../functions/generateAccessToken';
+import { generateRefreshToken } from '../functions/generateRefreshToken';
 
 const codeSchema = z.object({
 	code: z.string().min(1),
@@ -38,18 +38,12 @@ verifyEmail.post(
 		c.header('Set-Cookie', 'jwt=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
 
 		await c.env.DB.prepare('update users set email_verified = ? where id = ?').bind(true, user.id).run();
-		//Set JWT
-		const secret = '012931n01';
-		// JWT Paylod
-		const payload = {
-			email: user.email,
-			emailVerified: user.email_verified, // Note!!! For this route this might have to be manually set to true (untested)
-			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // Last value of 30 is days (JWT expires in 30 days)
-		};
 
-		const token = await sign(payload, secret);
+		//Set new JWT
+		const refreshToken = generateRefreshToken(user.email, true);
+		const accessToken = generateAccessToken(user.email);
 
-		c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
+		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
 

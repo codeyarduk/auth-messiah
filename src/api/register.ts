@@ -1,14 +1,13 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { initializeLucia } from '../functions/lucia';
 import { generateId } from 'lucia';
 import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
-import generateSigningToken from '../functions/generateSigningToken';
 import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
-import { decode, sign, verify } from 'hono/jwt';
+import { generateRefreshToken } from '../functions/generateRefreshToken';
+import { generateAccessToken } from '../functions/generateAccessToken';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -57,33 +56,11 @@ register.post(
 
 			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
 
-			// Generate the JWT and send it in a cookie
-			// Set signing secret/token
-			// const secret = generateSigningToken();
+			const verified = true;
+			const refreshToken = generateRefreshToken(email, verified);
+			const accessToken = generateAccessToken(email);
 
-			// const insertedToken = await c.env.DB.prepare(`INSERT INTO signing_tokens (id, email, signing_key) VALUES (?, ?, ?) returning *`)
-			// 	.bind(userId, email, secret)
-			// 	.first();
-
-			// console.log(insertedToken);
-
-			const secret = 'testsecret';
-			// JWT Paylod
-			const payloadInput = {
-				email: email,
-				emailVerified: false,
-				exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // Last value of 30 is days (JWT expires in 30 days)
-				tbtr: Math.floor(Date.now() / 1000),
-			};
-
-			const token = await sign(payloadInput, secret);
-
-			// Test decode to view the token
-			// const { header, payload } = decode(token);
-			// console.log('Decoded Header:', header);
-			// console.log('Decoded Payload:', payload);
-
-			c.header('Set-Cookie', `jwt=${token}; HttpOnly; Secure; SameSite=Strict`, {
+			c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
 				append: true,
 			});
 
