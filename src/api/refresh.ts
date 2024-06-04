@@ -1,11 +1,9 @@
 import { Hono } from 'hono';
-import { initializeLucia } from '../functions/lucia';
 import type { Bindings } from '../app.d.ts';
 import { Context } from 'hono';
-import type { User, Session } from 'lucia';
 import { verify } from 'hono/jwt';
 
-const refresh = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
+const refresh = new Hono<{ Bindings: Bindings }>();
 
 type SecretKey = string;
 type RefreshToken = string;
