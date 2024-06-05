@@ -5,6 +5,7 @@ import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
 import { generateAccessToken } from '../functions/generateAccessToken';
 import { verify } from 'hono/jwt';
+import { getCookie, getSignedCookie, setCookie, setSignedCookie, deleteCookie } from 'hono/cookie';
 
 const codeSchema = z.object({
 	code: z.string().min(1),
@@ -23,7 +24,7 @@ verifyEmail.post(
 	}),
 	async (c) => {
 		const secret = 'testsecret';
-		const currentAccessToken = c.req.header('accessToken'); // Might have to adjust how user is accessed and use the email in the JWT
+		const currentAccessToken = getCookie(c, 'accessToken'); // Might have to adjust how user is accessed and use the email in the JWT
 		console.log(currentAccessToken);
 
 		if (!currentAccessToken) {
@@ -46,16 +47,22 @@ verifyEmail.post(
 			return c.redirect('/verify-email?code=failed');
 		}
 
-		// Remove current JWT from the browser
-		c.header('Set-Cookie', 'jwt=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
-
 		await c.env.DB.prepare('UPDATE users SET email_verified = ? WHERE email = ?').bind(true, email).run();
 
 		//Set new JWT
-		const accessToken = generateAccessToken(email, true);
+		const accessToken = await generateAccessToken(email, true);
 
-		c.header('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
-			append: true,
+		deleteCookie(c, 'accessToken', {
+			path: '/',
+			secure: true,
+			domain: 'localhost:8787',
+		});
+		setCookie(c, 'accessToken', accessToken, {
+			expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+			path: '/',
+			domain: 'localhost:8787',
+			secure: true,
+			httpOnly: true,
 		});
 
 		return c.redirect('/');
