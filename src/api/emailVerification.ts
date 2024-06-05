@@ -24,6 +24,7 @@ verifyEmail.post(
 	async (c) => {
 		const secret = 'testsecret';
 		const currentAccessToken = c.req.header('accessToken'); // Might have to adjust how user is accessed and use the email in the JWT
+		console.log(currentAccessToken);
 
 		if (!currentAccessToken) {
 			return c.redirect('/verify-email?cookie=failed');

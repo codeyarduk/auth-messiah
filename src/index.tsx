@@ -4,7 +4,7 @@ import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
 import { Context } from 'hono';
-import { loginCheck } from './middleware/loginCheck';
+// import { loginCheck } from './middleware/loginCheck';
 
 import Login from './views/pages/Login';
 import Profile from './views/pages/Profile';
@@ -28,7 +28,7 @@ app.use(
 app.use(logger());
 app.use(csrf());
 app.use(rateLimiterMiddleware);
-app.use('/login', loginCheck);
+// app.use('/login', loginCheck);
 
 app.route('/api', api);
 

@@ -23,7 +23,6 @@ register.post(
 	'/',
 	validator('form', (value, c) => {
 		const parsed = userSchema.safeParse(value);
-		console.log('hi im the parsed data: ', parsed.error);
 		if (!parsed.success) {
 			return c.redirect('/register?content=failed');
 		}
@@ -35,9 +34,7 @@ register.post(
 		// Checks if the user already exists
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 
-		console.log(user);
 		if (user) {
-			console.log('user:', user);
 			return c.json('User already exists');
 		}
 		// Inserts the user into the database if the user does not exist
@@ -46,10 +43,9 @@ register.post(
 
 			const userId = generateId(15);
 
-			const insertedUser = await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
+			await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
 				.bind(userId, email, hashResult, false)
 				.first();
-			console.log(insertedUser);
 
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
@@ -57,13 +53,16 @@ register.post(
 			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
 
 			const verified = false;
-			const refreshToken = generateRefreshToken(email);
-			const accessToken = generateAccessToken(email, verified);
+			const refreshToken = await generateRefreshToken(email);
+			const accessToken = await generateAccessToken(email, verified);
 
-			c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
+			console.log('This is the refresh token:' + refreshToken);
+			console.log('This is the access token:' + accessToken);
+
+			c.header('Set-Cookie', `refreshToken=${refreshToken}; Secure; SameSite=Strict`, {
 				append: true,
 			});
-			c.header('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
+			c.header('Set-Cookie', `accessToken=${accessToken}; Secure; SameSite=Strict`, {
 				append: true,
 			});
 
