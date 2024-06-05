@@ -41,10 +41,14 @@ login.post(
 		// Generate the JWT and send it in a cookie
 		// Set signing secret/token
 
-		const refreshToken = generateRefreshToken(email, user.email_verified);
-		const accessToken = generateAccessToken(email);
+		const refreshToken = generateRefreshToken(email);
+		const accessToken = generateAccessToken(email, user.email_verified);
 
-		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
+		c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
+			append: true,
+		});
+
+		c.header('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
 			append: true,
 		});
 		return c.redirect('/profile');

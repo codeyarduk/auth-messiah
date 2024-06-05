@@ -1,21 +1,22 @@
 import { Hono } from 'hono';
-import { initializeLucia } from '../functions/lucia';
 import type { Bindings } from '../app.d.ts';
-import { Context } from 'hono';
-import type { User, Session } from 'lucia';
+import { verify } from 'hono/jwt';
 
-const logoutAll = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
+const logoutAll = new Hono<{ Bindings: Bindings }>();
 
-logoutAll.post('/', async (c: Context) => {
-	const lucia = initializeLucia(c.env.DB);
-	const session = c.get('session');
-	if (session) {
-		await lucia.invalidateUserSessions(session.user_id);
-	}
-	const sessionCookie = lucia.createBlankSessionCookie();
-	c.header('Set-Cookie', sessionCookie.serialize(), {
-		append: true,
-	});
+logoutAll.post('/', async (c) => {
+	const accessToken = c.req.header('accessToken');
+	const secret = 'testsecret';
+
+	const decodedPayload = await verify(accessToken, secret);
+
+	const email = decodedPayload.email;
+	const newTbtrValue = Math.floor(Date.now() / 1000);
+
+	await c.env.DB.prepare('UPDATE users SET tbtr = ? WHERE email = ?').bind(newTbtrValue).bind(email).run();
+
+	c.header('Set-Cookie', 'refreshToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+	c.header('Set-Cookie', 'accessToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
 	return c.json('Logged out all sessions');
 });
 

@@ -1,13 +1,12 @@
 import { sign } from 'hono/jwt';
 
-export async function generateAccessToken(email: string) {
+export async function generateAccessToken(email: string, verified: boolean) {
 	const secret = 'testsecret';
 	// JWT Paylod
 	const payload = {
 		email: email,
-		emailVerified: true, //Check if this is needed
-		exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
-		tbtr: Math.floor(Date.now() / 1000),
+		emailVerified: verified,
+		exp: Math.floor(Date.now() / 1000) + 60 * 15,
 	};
 
 	const token = await sign(payload, secret);

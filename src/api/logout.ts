@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { initializeLucia } from '../functions/lucia';
 import type { Bindings } from '../app.d.ts';
 import { Context } from 'hono';
 import type { User, Session } from 'lucia';
@@ -8,23 +7,9 @@ const logout = new Hono<{ Bindings: Bindings; Variables: { user: User | null; se
 
 logout.post('/', async (c: Context) => {
 	// Clear the JWT cookie
-	c.header('Set-Cookie', 'jwt=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+	c.header('Set-Cookie', 'refreshToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
+	c.header('Set-Cookie', 'accessToken=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
 	return c.json('Logged out');
 });
-
-
-
-// login.post('/logout', async (c) => {
-// 	const lucia = initializeLucia(c.env.DB);
-// 	const session = c.get('session');
-// 	if (session) {
-// 		await lucia.invalidateSession(session.id);
-// 	}
-// 	const sessionCookie = lucia.createBlankSessionCookie();
-// 	c.header('Set-Cookie', sessionCookie.serialize(), {
-// 		append: true,
-// 	});
-// 	return c.json('Logged out');
-// });
 
 export { logout };

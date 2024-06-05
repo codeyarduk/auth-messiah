@@ -34,7 +34,7 @@ create table users
 create table email_verification_codes
 (
     id    INTEGER not null primary key AUTOINCREMENT,
-    email TEXT,
+    email TEXT not null unique,
     user_id TEXT unique,
     code TEXT,
     expires_at TEXT
@@ -49,5 +49,5 @@ Users Table
 Email Verification Table
 
 ```
-wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
+wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
 ```
