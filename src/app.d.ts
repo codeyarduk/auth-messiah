@@ -10,8 +10,9 @@ declare namespace Lucia {
 export type Bindings = {
 	DB: D1Database;
 	DKIM_PRIVATE_KEY?: string;
-	ResendKey: string;
+	RESEND_KEY: string;
 	SITE_URL: string;
+	SECRET_KEY: string;
 };
 
 export type UserTable = {

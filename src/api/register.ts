@@ -38,6 +38,9 @@ register.post(
 		if (user) {
 			return c.json('User already exists');
 		}
+
+		const key = c.env.RESEND_KEY;
+		console.log(key);
 		// Inserts the user into the database if the user does not exist
 		try {
 			const hashResult = await hashPassword(password);
@@ -51,12 +54,11 @@ register.post(
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
-			const key = c.env.ResendKey;
 			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode, key);
 
 			const verified = false;
-			const refreshToken = await generateRefreshToken(email);
-			const accessToken = await generateAccessToken(email, verified);
+			const refreshToken = await generateRefreshToken(email, c.env.SECRET_KEY);
+			const accessToken = await generateAccessToken(email, verified, c.env.SECRET_KEY);
 
 			console.log('This is the refresh token:' + refreshToken);
 			console.log('This is the access token:' + accessToken);

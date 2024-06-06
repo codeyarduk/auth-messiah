@@ -1,7 +1,7 @@
 import { sign } from 'hono/jwt';
 
-export async function generateAccessToken(email: string, verified: boolean) {
-	const secret = 'testsecret';
+export async function generateAccessToken(email: string, verified: boolean, secretKey: string) {
+	const secret = secretKey;
 	// JWT Paylod
 	const payload = {
 		email: email,

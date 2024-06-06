@@ -7,7 +7,7 @@ const logoutAll = new Hono<{ Bindings: Bindings }>();
 
 logoutAll.post('/', async (c) => {
 	const accessToken = getCookie(c, 'accessToken');
-	const secret = 'testsecret';
+	const secret = c.env.SECRET_KEY;
 
 	const decodedPayload = await verify(accessToken, secret);
 

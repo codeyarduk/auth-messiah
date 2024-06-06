@@ -3,7 +3,8 @@ import type { Bindings, UserTable } from '../app';
 import { verify } from 'hono/jwt';
 import { generateAccessToken } from '../functions/generateAccessToken';
 import { setCookie } from 'hono/cookie';
-const refresh = new Hono<{ Bindings: Bindings }>();
+
+const refresh = new Hono<{ Bindings: Bindings; UserTable: UserTable }>();
 
 type SecretKey = string;
 type RefreshToken = string;
@@ -54,7 +55,7 @@ refresh.post('/', async (c) => {
 
 	// Logic for creating a new access token should go here
 
-	const accessToken = await generateAccessToken(user.email, user.email_verified);
+	const accessToken = await generateAccessToken(user.email, user.email_verified, c.env.SECRET_KEY);
 
 	setCookie(c, 'accessToken', accessToken, {
 		expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes

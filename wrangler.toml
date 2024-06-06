@@ -5,10 +5,9 @@ compatibility_date = "2024-05-12"
 compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
-binding = "DB" # i.e. available in your Worker on env.DB
+binding = "DB"
 database_name = "auth-messiah"
 database_id = "17907672-80af-400a-ab29-6a07e4618747"
 
 [[vars]]
 SITE_URL = "localhost:8787"
-

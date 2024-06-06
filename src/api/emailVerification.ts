@@ -23,7 +23,7 @@ verifyEmail.post(
 		return parsed.data;
 	}),
 	async (c) => {
-		const secret = 'testsecret';
+		const secret = c.env.SECRET_KEY;
 		const currentAccessToken = getCookie(c, 'accessToken');
 		console.log(currentAccessToken);
 
@@ -50,7 +50,7 @@ verifyEmail.post(
 		await c.env.DB.prepare('UPDATE users SET email_verified = ? WHERE email = ?').bind(true, email).run();
 
 		//Set new JWT
-		const accessToken = await generateAccessToken(email, true);
+		const accessToken = await generateAccessToken(email, true, c.env.SECRET_KEY);
 
 		deleteCookie(c, 'accessToken', {
 			path: '/',

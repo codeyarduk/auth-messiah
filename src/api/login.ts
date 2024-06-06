@@ -53,8 +53,8 @@ login.post(
 		});
 
 		// Generate the JWT and send it in a cookie
-		const refreshToken = await generateRefreshToken(email);
-		const accessToken = await generateAccessToken(email, user.email_verified);
+		const refreshToken = await generateRefreshToken(email, c.env.SECRET_KEY);
+		const accessToken = await generateAccessToken(email, user.email_verified, c.env.SECRET_KEY);
 
 		setCookie(c, 'refreshToken', refreshToken, {
 			expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
