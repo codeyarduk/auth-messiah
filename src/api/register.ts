@@ -8,7 +8,7 @@ import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
 import { generateRefreshToken } from '../functions/generateRefreshToken';
 import { generateAccessToken } from '../functions/generateAccessToken';
-import { getCookie, getSignedCookie, setCookie, setSignedCookie, deleteCookie } from 'hono/cookie';
+import { setCookie } from 'hono/cookie';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -59,24 +59,17 @@ register.post(
 
 			console.log('This is the refresh token:' + refreshToken);
 			console.log('This is the access token:' + accessToken);
-			try {
-				setCookie(c, 'refreshToken', refreshToken, {
-					expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
-					secure: true,
-					httpOnly: true,
-				});
+			setCookie(c, 'refreshToken', refreshToken, {
+				expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
+				secure: true,
+				httpOnly: true,
+			});
 
-				setCookie(c, 'accessToken', accessToken, {
-					expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
-					secure: true,
-					httpOnly: true,
-				});
-			} catch (err) {
-				console.log(err);
-			}
-			const allCookies = getCookie(c, 'accessToken');
-
-			console.log('all cookies: ' + allCookies);
+			setCookie(c, 'accessToken', accessToken, {
+				expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+				secure: true,
+				httpOnly: true,
+			});
 
 			return c.redirect('/verify');
 		} catch (err) {
