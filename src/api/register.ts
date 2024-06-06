@@ -51,7 +51,8 @@ register.post(
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
-			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
+			const key = c.env.ResendKey;
+			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode, key);
 
 			const verified = false;
 			const refreshToken = await generateRefreshToken(email);

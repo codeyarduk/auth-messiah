@@ -1,8 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend('re_7pQyzmoh_427vjGkt2TL2WFJSngzsfFjS');
-
-const sendEmailOrLog = async (recipient: string, subject: string, content: string) => {
+const sendEmailOrLog = async (recipient: string, subject: string, content: string, key: string) => {
+	const resend = new Resend(key);
 	const { data, error } = await resend.emails.send({
 		from: 'verify@auth.codeyard.co.uk',
 		to: recipient,
