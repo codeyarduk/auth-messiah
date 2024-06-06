@@ -5,7 +5,7 @@ import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
 import { generateAccessToken } from '../functions/generateAccessToken';
 import { verify } from 'hono/jwt';
-import { getCookie, getSignedCookie, setCookie, setSignedCookie, deleteCookie } from 'hono/cookie';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 
 const codeSchema = z.object({
 	code: z.string().min(1),

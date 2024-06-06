@@ -5,6 +5,7 @@ import type { Bindings, UserTable } from '../app';
 import { validator } from 'hono/validator';
 import { generateRefreshToken } from '../functions/generateRefreshToken';
 import { generateAccessToken } from '../functions/generateAccessToken';
+import { setCookie, deleteCookie } from 'hono/cookie';
 
 const userSchema = z.object({
 	email: z.string().min(1).email(),
@@ -38,18 +39,33 @@ login.post(
 			// return c.json('Invalid email or password', 400);
 			return c.redirect('/login?auth=failed');
 		}
-		// Generate the JWT and send it in a cookie
-		// Set signing secret/token
 
-		const refreshToken = generateRefreshToken(email);
-		const accessToken = generateAccessToken(email, user.email_verified);
-
-		c.header('Set-Cookie', `refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
-			append: true,
+		// Delete old cookies
+		deleteCookie(c, 'accessToken', {
+			path: '/',
+			secure: true,
+			domain: 'localhost:8787',
+		});
+		deleteCookie(c, 'refreshToken', {
+			path: '/',
+			secure: true,
+			domain: 'localhost:8787',
 		});
 
-		c.header('Set-Cookie', `accessToken=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
-			append: true,
+		// Generate the JWT and send it in a cookie
+		const refreshToken = await generateRefreshToken(email);
+		const accessToken = await generateAccessToken(email, user.email_verified);
+
+		setCookie(c, 'refreshToken', refreshToken, {
+			expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
+			secure: true,
+			httpOnly: true,
+		});
+
+		setCookie(c, 'accessToken', accessToken, {
+			expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+			secure: true,
+			httpOnly: true,
 		});
 		return c.redirect('/profile');
 	},
