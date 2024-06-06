@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { Bindings, UserTable } from '../app';
 import { verify } from 'hono/jwt';
 import { generateAccessToken } from '../functions/generateAccessToken';
-
+import { setCookie } from 'hono/cookie';
 const refresh = new Hono<{ Bindings: Bindings }>();
 
 type SecretKey = string;
@@ -54,11 +54,12 @@ refresh.post('/', async (c) => {
 
 	// Logic for creating a new access token should go here
 
-	const accessToken = generateAccessToken(email);
+	const accessToken = await generateAccessToken(user.email, user.email_verified);
 
-	c.header('Set-Cookie', `jwt=${accessToken}; HttpOnly; Secure; SameSite=Strict`, {
-		append: true,
+	setCookie(c, 'accessToken', accessToken, {
+		expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+		secure: true,
+		httpOnly: true,
 	});
-
 	return c.json({ response: 'Access Token Returned' });
 });

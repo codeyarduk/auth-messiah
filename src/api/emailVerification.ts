@@ -59,8 +59,6 @@ verifyEmail.post(
 		});
 		setCookie(c, 'accessToken', accessToken, {
 			expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
-			path: '/',
-			domain: 'localhost:8787',
 			secure: true,
 			httpOnly: true,
 		});

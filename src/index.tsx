@@ -26,7 +26,7 @@ app.use(
 	}),
 );
 app.use(logger());
-app.use(csrf());
+// app.use(csrf({ origin: 'localhost:8787' }));
 app.use(rateLimiterMiddleware);
 // app.use('/login', loginCheck);
 

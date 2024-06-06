@@ -62,18 +62,14 @@ register.post(
 			try {
 				setCookie(c, 'refreshToken', refreshToken, {
 					expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
-					path: '/',
-					domain: 'localhost:8787',
-					// secure: true,
-					// httpOnly: true,
+					secure: true,
+					httpOnly: true,
 				});
 
 				setCookie(c, 'accessToken', accessToken, {
 					expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
-					path: '/',
-					domain: 'localhost:8787',
-					// secure: true,
-					// httpOnly: true,
+					secure: true,
+					httpOnly: true,
 				});
 			} catch (err) {
 				console.log(err);
