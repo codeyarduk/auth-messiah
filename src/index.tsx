@@ -12,21 +12,28 @@ import Register from './views/pages/Register';
 import EmailCode from './views/pages/VerifyEmail';
 
 import api from './api';
+import { Bindings } from './app';
 
-const app = new Hono();
+const app = new Hono<{ Bindings: Bindings }>();
 
-app.use(
+app.use('*', async (c, next) => {
 	cors({
-		origin: 'localhost:8787',
+		origin: c.env.SITE_URL,
 		allowHeaders: ['Content-Type', 'X-Custom-Header', 'Upgrade-Insecure-Requests', 'Access-Control-Allow-Origin'],
 		allowMethods: ['POST', 'GET', 'OPTIONS'],
 		exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
 		maxAge: 600,
 		credentials: true,
-	}),
-);
+	});
+	console.log(c.env.SITE_URL);
+	await next();
+});
+
 app.use(logger());
-// app.use(csrf({ origin: 'localhost:8787' }));
+app.use('*', async (c, next) => {
+	csrf({ origin: c.env.SITE_URL });
+	await next();
+});
 app.use(rateLimiterMiddleware);
 // app.use('/login', loginCheck);
 

@@ -11,6 +11,7 @@ export type Bindings = {
 	DB: D1Database;
 	DKIM_PRIVATE_KEY?: string;
 	ResendKey: string;
+	SITE_URL: string;
 };
 
 export type UserTable = {

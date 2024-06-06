@@ -8,3 +8,7 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "auth-messiah"
 database_id = "17907672-80af-400a-ab29-6a07e4618747"
+
+[[vars]]
+SITE_URL = "localhost:8787"
+

@@ -18,12 +18,12 @@ logoutAll.post('/', async (c) => {
 	deleteCookie(c, 'accessToken', {
 		path: '/',
 		secure: true,
-		domain: 'localhost:8787',
+		domain: c.env.SITE_URL,
 	});
 	deleteCookie(c, 'refreshToken', {
 		path: '/',
 		secure: true,
-		domain: 'localhost:8787',
+		domain: c.env.SITE_URL,
 	});
 
 	return c.json('Logged out all sessions');

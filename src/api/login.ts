@@ -44,12 +44,12 @@ login.post(
 		deleteCookie(c, 'accessToken', {
 			path: '/',
 			secure: true,
-			domain: 'localhost:8787',
+			domain: c.env.SITE_URL,
 		});
 		deleteCookie(c, 'refreshToken', {
 			path: '/',
 			secure: true,
-			domain: 'localhost:8787',
+			domain: c.env.SITE_URL,
 		});
 
 		// Generate the JWT and send it in a cookie
