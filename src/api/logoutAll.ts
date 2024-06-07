@@ -1,21 +1,31 @@
 import { Hono } from 'hono';
-import { initializeLucia } from '../functions/lucia';
 import type { Bindings } from '../app.d.ts';
-import { Context } from 'hono';
-import type { User, Session } from 'lucia';
+import { verify } from 'hono/jwt';
+import { deleteCookie, getCookie } from 'hono/cookie';
 
-const logoutAll = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
+const logoutAll = new Hono<{ Bindings: Bindings }>();
 
-logoutAll.post('/', async (c: Context) => {
-	const lucia = initializeLucia(c.env.DB);
-	const session = c.get('session');
-	if (session) {
-		await lucia.invalidateUserSessions(session.user_id);
-	}
-	const sessionCookie = lucia.createBlankSessionCookie();
-	c.header('Set-Cookie', sessionCookie.serialize(), {
-		append: true,
+logoutAll.post('/', async (c) => {
+	const accessToken = getCookie(c, 'accessToken');
+	const secret = c.env.SECRET_KEY;
+
+	const decodedPayload = await verify(accessToken, secret);
+
+	const email = decodedPayload.email;
+	const newTbtrValue = Math.floor(Date.now() / 1000);
+
+	await c.env.DB.prepare('UPDATE users SET tbtr = ? WHERE email = ?').bind(newTbtrValue).bind(email).run();
+	deleteCookie(c, 'accessToken', {
+		path: '/',
+		secure: true,
+		domain: c.env.SITE_URL,
 	});
+	deleteCookie(c, 'refreshToken', {
+		path: '/',
+		secure: true,
+		domain: c.env.SITE_URL,
+	});
+
 	return c.json('Logged out all sessions');
 });
 

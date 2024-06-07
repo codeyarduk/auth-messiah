@@ -1,12 +1,11 @@
 import { D1Database } from '@cloudflare/workers-types';
 import { isWithinExpirationDate } from 'oslo';
-import type { User } from 'lucia';
 import type { EmailVerificationCode } from '../app.d.ts';
 
-async function verifyVerificationCode(db: D1Database, user: User, code: string) {
+async function verifyVerificationCode(db: D1Database, email: string, code: string) {
 	const databaseCode = await db
-		.prepare('delete from email_verification_codes where user_id = ? and code = ? and email = ? returning *')
-		.bind(user.id, code, user.email)
+		.prepare('delete from email_verification_codes where code = ? and email = ? returning *')
+		.bind(code, email)
 		.first<EmailVerificationCode>();
 
 	if (!databaseCode) {

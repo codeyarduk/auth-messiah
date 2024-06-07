@@ -6,13 +6,13 @@ import { logout } from './logout';
 import { logoutAll } from './logoutAll';
 import { verifyEmail } from './emailVerification';
 
-import { loginCheck } from '../middleware/loginCheck';
+// import { loginCheck } from '../middleware/loginCheck';
 
 const api = new Hono();
 
-api.use('/login', loginCheck);
-api.use('/register', loginCheck);
-api.use('/verify-email', loginCheck);
+// api.use('/login', loginCheck);
+// api.use('/register', loginCheck);
+// api.use('/verify-email', loginCheck);
 
 api.route('/register', register);
 api.route('/login', login);

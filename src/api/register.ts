@@ -8,6 +8,7 @@ import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
 import { generateRefreshToken } from '../functions/generateRefreshToken';
 import { generateAccessToken } from '../functions/generateAccessToken';
+import { setCookie } from 'hono/cookie';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -23,7 +24,6 @@ register.post(
 	'/',
 	validator('form', (value, c) => {
 		const parsed = userSchema.safeParse(value);
-		console.log('hi im the parsed data: ', parsed.error);
 		if (!parsed.success) {
 			return c.redirect('/register?content=failed');
 		}
@@ -35,34 +35,45 @@ register.post(
 		// Checks if the user already exists
 		const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 
-		console.log(user);
 		if (user) {
-			console.log('user:', user);
 			return c.json('User already exists');
 		}
+
+		const key = c.env.RESEND_KEY;
+		console.log(key);
 		// Inserts the user into the database if the user does not exist
 		try {
 			const hashResult = await hashPassword(password);
 
 			const userId = generateId(15);
 
-			const insertedUser = await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
+			await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
 				.bind(userId, email, hashResult, false)
 				.first();
-			console.log(insertedUser);
 
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
-			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode);
+			await sendEmailOrLog(email, 'Welcome to CodeYard', 'Your verfication code is ' + verificationCode, key);
 
-			const verified = true;
-			const refreshToken = generateRefreshToken(email, verified);
-			const accessToken = generateAccessToken(email);
+			const verified = false;
+			const refreshToken = await generateRefreshToken(email, c.env.SECRET_KEY);
+			const accessToken = await generateAccessToken(email, verified, c.env.SECRET_KEY);
 
-			c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
-				append: true,
+			console.log('This is the refresh token:' + refreshToken);
+			console.log('This is the access token:' + accessToken);
+			setCookie(c, 'refreshToken', refreshToken, {
+				expires: new Date(Date.now() + 24 * 60 * 60 * 1000 * 30), // Expires in 30 days
+				secure: true,
+				httpOnly: true,
 			});
+
+			setCookie(c, 'accessToken', accessToken, {
+				expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+				secure: true,
+				httpOnly: true,
+			});
+
 			return c.redirect('/verify');
 		} catch (err) {
 			console.log(err);

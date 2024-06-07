@@ -3,15 +3,15 @@ import { verifyVerificationCode } from '../functions/verifyEmailCode';
 import { z } from 'zod';
 import { validator } from 'hono/validator';
 import type { Bindings } from '../app.d.ts';
-import type { User, Session } from 'lucia';
 import { generateAccessToken } from '../functions/generateAccessToken';
-import { generateRefreshToken } from '../functions/generateRefreshToken';
+import { verify } from 'hono/jwt';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 
 const codeSchema = z.object({
 	code: z.string().min(1),
 });
 
-const verifyEmail = new Hono<{ Bindings: Bindings; Variables: { user: User | null; session: Session | null } }>();
+const verifyEmail = new Hono<{ Bindings: Bindings }>();
 
 verifyEmail.post(
 	'/',
@@ -23,28 +23,44 @@ verifyEmail.post(
 		return parsed.data;
 	}),
 	async (c) => {
-		const user = c.get('user') as any; // Might have to adjust how user is accessed and use the email in the JWT
-		const { code } = c.req.valid('form');
-		console.log('This is the user:' + user);
-		if (!user) {
-			return c.redirect('/verify-email?user=failed');
+		const secret = c.env.SECRET_KEY;
+		const currentAccessToken = getCookie(c, 'accessToken');
+		console.log(currentAccessToken);
+
+		if (!currentAccessToken) {
+			return c.redirect('/verify-email?cookie=failed');
 		}
-		const validCode = await verifyVerificationCode(c.env.DB, user, code);
+
+		const decodedPayload = await verify(currentAccessToken, secret);
+		console.log(decodedPayload);
+
+		if (!decodedPayload) {
+			return c.redirect('/verify-email?signiture=failed');
+		}
+
+		const email = decodedPayload.email;
+
+		const { code } = c.req.valid('form');
+
+		const validCode = await verifyVerificationCode(c.env.DB, email, code);
 		if (!validCode) {
 			return c.redirect('/verify-email?code=failed');
 		}
 
-		// Remove current JWT from the browser
-		c.header('Set-Cookie', 'jwt=; HttpOnly; Secure; SameSite=Strict; Max-Age=0');
-
-		await c.env.DB.prepare('update users set email_verified = ? where id = ?').bind(true, user.id).run();
+		await c.env.DB.prepare('UPDATE users SET email_verified = ? WHERE email = ?').bind(true, email).run();
 
 		//Set new JWT
-		const refreshToken = generateRefreshToken(user.email, true);
-		const accessToken = generateAccessToken(user.email);
+		const accessToken = await generateAccessToken(email, true, c.env.SECRET_KEY);
 
-		c.header('Set-Cookie', `jwt=${refreshToken}; HttpOnly; Secure; SameSite=Strict`, {
-			append: true,
+		deleteCookie(c, 'accessToken', {
+			path: '/',
+			secure: true,
+			domain: c.env.SITE_URL,
+		});
+		setCookie(c, 'accessToken', accessToken, {
+			expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
+			secure: true,
+			httpOnly: true,
 		});
 
 		return c.redirect('/');

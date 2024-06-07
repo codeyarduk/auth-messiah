@@ -8,7 +8,6 @@ const rateLimiter = new RateLimiterMemory({
 });
 // export async function
 export async function rateLimiterMiddleware(c: Context, next: Next) {
-	console.log('Hi im the rate limiter middleware');
 	try {
 		await rateLimiter.consume(c.env.ip);
 		await next();
