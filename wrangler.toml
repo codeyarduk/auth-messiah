@@ -11,3 +11,4 @@ database_id = "17907672-80af-400a-ab29-6a07e4618747"
 
 [[vars]]
 SITE_URL = "localhost:8787"
+REDIRECT_URL = "https://apple.com"

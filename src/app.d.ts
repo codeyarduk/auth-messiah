@@ -12,6 +12,7 @@ export type Bindings = {
 	DKIM_PRIVATE_KEY?: string;
 	RESEND_KEY: string;
 	SITE_URL: string;
+	REDIRECT_URL: string;
 	SECRET_KEY: string;
 };
 

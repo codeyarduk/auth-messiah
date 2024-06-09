@@ -62,8 +62,8 @@ verifyEmail.post(
 			secure: true,
 			httpOnly: true,
 		});
-
-		return c.redirect('/');
+		console.log('Redirect URL: ' + c.env.REDIRECT_URL + 'SITEURL: ' + c.env.SITE_URL);
+		return c.redirect(c.env.REDIRECT_URL);
 	},
 );
 
