@@ -53,3 +53,9 @@ Email Verification Table
 ```
 wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
 ```
+
+#### OAuth
+
+Confirm that the Oauth provider that you are using, correctly returns the email address for the user, regardless of user settings. 
+
+For example, Github allows users to set their email to hidden, which means you have to make a specific call to /user/emails instead of /user to get the correct email
