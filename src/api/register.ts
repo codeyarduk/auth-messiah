@@ -51,6 +51,7 @@ register.post(
 				.bind(userId, email, hashResult, false)
 				.first();
 
+			// Verification Code
 			const verificationCode = await generateEmailVerificationCode(c.env.DB, userId, email);
 			console.log('This is the verification code:' + verificationCode);
 
