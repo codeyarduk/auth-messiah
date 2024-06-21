@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { googleAuth } from '@hono/oauth-providers/google';
+import { loginUser } from '../functions/loginUser';
 
 const google = new Hono();
 
@@ -17,11 +18,11 @@ google.get('/', (c) => {
 	const grantedScopes = c.get('granted-scopes');
 	const user = c.get('user-google');
 
-	return c.json({
-		token,
-		grantedScopes,
-		user,
-	});
+	// Check that email is defined (if not return error and don't generate tokens
+	const email = user.email;
+	loginUser(c, email);
+
+	return c.redirect('/profile', 301);
 });
 
 export { google };
