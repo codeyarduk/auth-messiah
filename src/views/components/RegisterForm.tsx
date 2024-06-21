@@ -16,13 +16,13 @@ export async function RegisterForm({ action, queryParameters }: RegisterFormProp
 	console.log('QUERY:', queryParameters);
 
 	return (
-		<>
-			<form class="h-screen justify-between flex flex-col py-16" method="POST" action={targetUrl}>
+		<div className="h-screen flex flex-col justify-center">
+			<form className="" method="POST" action={targetUrl}>
 				<div className="w-full flex items-center justify-center">
 					<img src="https://i.imgur.com/KLaDLBx.png" width="64" height="64" className="" />
 				</div>
 				<div>
-					<div class="">
+					<div className="mt-16">
 						<h1 className="text-[30px] mb-6 text-center font-bold">Welcome to the team!</h1>
 					</div>
 					<div className="">
@@ -55,20 +55,18 @@ export async function RegisterForm({ action, queryParameters }: RegisterFormProp
 						</p>
 					</div>
 					<div className="h-[1px] w-full mb-8 bg-slate-200"></div>
-					<SocialButton continueWith="Google" link="/google" />
-					<SocialButton continueWith="Apple" link="/apple" />
-				</div>
-
-				<div className="flex w-full justify-center">
-					<p className="text-sm text-center max-w-[300px]">
-						By signing up, you agree to our <span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">Terms of Service</span>{' '}
-						and <span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">Privacy Policy</span>
-					</p>
 				</div>
 			</form>
 			<form method="POST" action="api/google">
 				<SocialButton continueWith="Google" link="/google" />
 			</form>
-		</>
+
+			<div className="flex w-full justify-center pt-16">
+				<p className="text-sm text-center max-w-[300px]">
+					By signing up, you agree to our <span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">Terms of Service</span> and{' '}
+					<span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">Privacy Policy</span>
+				</p>
+			</div>
+		</div>
 	);
 }
