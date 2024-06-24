@@ -1,8 +1,18 @@
 import { Hono } from 'hono';
 import { googleAuth } from '@hono/oauth-providers/google';
 import { loginUser } from '../functions/loginUser';
+import { deleteCookie } from 'hono/cookie';
+import { Bindings } from '../app';
 
-const google = new Hono();
+const google = new Hono<{ Bindings: Bindings }>();
+
+google.use('/', async (c, next) => {
+	deleteCookie(c, 'state', {
+		path: '/',
+		domain: 'localhost:8787',
+	});
+	await next();
+});
 
 google.use('/', async (c, next) => {
 	const req = googleAuth({
@@ -18,9 +28,11 @@ google.get('/', (c) => {
 	const grantedScopes = c.get('granted-scopes');
 	const user = c.get('user-google');
 
-	// Check that email is defined (if not return error and don't generate tokens
 	const email = user.email;
-	loginUser(c, email);
+	if (!email) {
+		return c.text('Error, email is undefinded');
+	}
+	loginUser(c, email, c.env.DB);
 
 	return c.redirect('/profile', 301);
 });
