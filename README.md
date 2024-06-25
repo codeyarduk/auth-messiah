@@ -1,25 +1,22 @@
 # Auth Messiah
-#### User Authentication template for Cloudflare Workers
+### User Authentication Worker based on Cloudflare workers
 
+Intended as a plug and play authentication backed that works on cloudflare workers. It is built with typescript and [hono](https://hono.dev)
 
-#### Goals
-The end goal for this project is to create an easy to use wrapable auth worker that returns jwt's when used.
+This can technically be hosted on any provider as [hono](https://hono.dev)is compatible which a large number of runtimes. Some variable conversion will be required for runtimes other than cloudflare workers.
+ 
+### What does it do?
 
-This enables the user to clone the repo/worker and self-host auth that is done end-end.
+Enables you to host your own authentication without having to roll your own auth. 
 
-The ideal use would be using iframe's in your project similar to how Auth0 works. 
+Auth Messiah returns 2 simple tokens which you can use in your application. The tokens are a refresh and access token. You can control access to your app by checking for a valid access token on every request. The tokens are in a JWT format. Building an npm package that handles this is in the roadmap.
 
-#### Tech Stack
-1. TypeScrpt
-2. Cloudflare Workers
-3. Hono
-4. Lucia Auth 
-5. Zod Validator
 
 #### Install Process
 
-coming soon... (I need to take the time to make it reproducable)
+This is a rough idea, more specific instructions are in the roadmap.
 
+Clone this repo and host it on cloudflare workers, replace all enviroment variables with your enviroment variables. Then setup the databse. Finally integrate it with your app by redirecting all sign up buttons on your website to the corresponding Auth Messian page.
 
 #### Database Schema
 
@@ -45,13 +42,13 @@ _Commands to execute to gen tables_
 Users Table
 
 ```
-wrangler d1 execute auth-messiah --command='CREATE TABLE users (id TEXT NOT NULL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT, email_verified BOOLEAN DEFAULT false, tbtr INTEGER NOT NULL);'
+npx wrangler d1 execute auth-messiah --command='CREATE TABLE users (id TEXT NOT NULL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT, email_verified BOOLEAN DEFAULT false, tbtr INTEGER NOT NULL);'
 ```
 
 Email Verification Table
 
 ```
-wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
+npx wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_codes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, user_id TEXT UNIQUE, code TEXT, expires_at TEXT);'
 ```
 
 #### OAuth

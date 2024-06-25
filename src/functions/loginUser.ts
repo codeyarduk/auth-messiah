@@ -1,7 +1,8 @@
 import { generateId } from 'lucia';
 import { setCookies } from './setCookies';
-import type { Bindings, UserTable } from '../app.d.ts';
-export async function loginUser(c: Bindings, email: string, db: D1Database) {
+import type { UserTable } from '../app.d.ts';
+import { Context } from 'hono';
+export async function loginUser(c: Context, email: string, db: D1Database) {
 	console.log('starting login user function');
 	// Checks if the user already exists and logs in if they do
 	try {

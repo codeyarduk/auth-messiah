@@ -1,8 +1,9 @@
 import { setCookie } from 'hono/cookie';
 import { generateAccessToken } from './generateAccessToken';
 import { generateRefreshToken } from './generateRefreshToken';
+import { Context } from 'hono';
 
-export async function setCookies(c, email: string, verified: boolean) {
+export async function setCookies(c: Context, email: string, verified: boolean) {
 	// Generating new tokens and setting them as cookies
 	const refreshToken = await generateRefreshToken(email, c.env.SECRET_KEY);
 	const accessToken = await generateAccessToken(email, verified, c.env.SECRET_KEY);
