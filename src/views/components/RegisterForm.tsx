@@ -61,6 +61,10 @@ export async function RegisterForm({ action, queryParameters }: RegisterFormProp
 				<SocialButton continueWith="Google" link="/google" />
 			</form>
 
+			<form method="POST" action="api/github">
+				<SocialButton continueWith="GitHub" link="/github" />
+			</form>
+
 			<div className="flex w-full justify-center pt-16">
 				<p className="text-sm text-center max-w-[300px]">
 					By signing up, you agree to our <span className="text-[#27C9A0]  hover:cursor-pointer hover:underline">Terms of Service</span> and{' '}
