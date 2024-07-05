@@ -16,7 +16,9 @@ Auth Messiah returns 2 simple tokens which you can use in your application. The 
 
 This is a rough idea, more specific instructions are in the roadmap.
 
-Clone this repo and host it on cloudflare workers, replace all enviroment variables with your enviroment variables. Then setup the databse. Finally integrate it with your app by redirecting all sign up buttons on your website to the corresponding Auth Messian page.
+Github does not natively support private forking of a repo, I made a short guide on how to manually do it [here](private-fork.md)
+
+Host it on cloudflare workers, replace all enviroment variables with your enviroment variables. Then setup the databse. Finally integrate it with your app by redirecting all sign up buttons on your website to the corresponding Auth Messian page.
 
 #### Database Schema
 
