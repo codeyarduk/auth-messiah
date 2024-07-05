@@ -5,6 +5,7 @@ import { login } from './login';
 import { logout } from './logout';
 import { logoutAll } from './logoutAll';
 import { verifyEmail } from './emailVerification';
+import { google } from './google';
 
 // import { loginCheck } from '../middleware/loginCheck';
 
@@ -19,5 +20,6 @@ api.route('/login', login);
 api.route('/logout', logout);
 api.route('/logout-sessions', logoutAll);
 api.route('/verify-email', verifyEmail);
+api.route('/google', google);
 
 export default api;
