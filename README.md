@@ -59,7 +59,11 @@ npx wrangler d1 execute auth-messiah --command='CREATE TABLE email_verification_
 
 Now repeat both those commands with a --remote at the end of them.
 
-Change all the enviroment variables to your own variables and add those to your cloudflare worker on cloudflares console side. You can find them [here](#### Enviroment Variables)
+Change all the enviroment variables to your own variables and add those to your cloudflare worker on cloudflares console side. You can add env variables using this command
+```
+npx wrangler secret put <KEY_NAME>
+```
+Then it will prompt you to enter the secret 
 
 Then host this on auth.yourdomain.com. 
 
@@ -96,11 +100,14 @@ When working with cloudflare workers your enviroment variables should be kept in
 
 The required enviroment variables for you to set are as follows:
 
+Secrets:
 SECRET_KEY=this is the pepper for all jwt's
 RESEND_KEY=for email verfication service
-SITE_URL=
-REDIRECT_URL=
 GOOGLE_ID= 
 GOOGLE_SECRET=
 GITHUB_ID=
 GITHUB_SECRET=
+
+Global Vars in wrangler.toml:
+SITE_URL=
+REDIRECT_URL=
