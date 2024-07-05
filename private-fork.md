@@ -43,7 +43,7 @@ The [repository](https://github.com/codeyarduk/auth-messiah) for the auth-messia
     > When you want to pull changes from `upstream` you can just fetch the remote and rebase on top of your work.
     ```bash
       git fetch upstream
-      git rebase upstream/master
+      git rebase upstream/main
       ```
       And solve the conflicts if any
 
