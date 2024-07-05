@@ -41,9 +41,9 @@ register.post(
 		const hashResult = await hashPassword(password);
 
 		const userId = generateId(15);
-		// Note: Add some error handling if all the items taht get entered into the DB aren't correct before being
-		await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified) VALUES (?, ?, ?, ?) returning *`)
-			.bind(userId, email, hashResult, false)
+		const currentDate = Math.floor(Date.now() / 1000); // Note: Add some error handling if all the items taht get entered into the DB aren't correct before being
+		await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified, tbtr) VALUES (?, ?, ?, ?, ?) returning *`)
+			.bind(userId, email, hashResult, false, currentDate)
 			.first();
 
 		// Generating new tokens and setting them as cookies
