@@ -12,7 +12,7 @@ export async function setCookies(c: Context, email: string, verified: boolean) {
 	setCookie(c, 'refreshToken', refreshToken, {
 		path: '/',
 		secure: true,
-		domain: 'wilson.codeyard.co.uk',
+		domain: c.env.SITE_URL,
 		httpOnly: true,
 		maxAge: 30 * 24 * 60 * 60,
 		expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -21,7 +21,7 @@ export async function setCookies(c: Context, email: string, verified: boolean) {
 	setCookie(c, 'accessToken', accessToken, {
 		path: '/',
 		secure: true,
-		domain: 'wilson.codeyard.co.uk',
+		domain: c.env.SITE_URL,
 		httpOnly: true,
 		maxAge: 15 * 60,
 		expires: new Date(Date.now() + 15 * 60 * 1000),
