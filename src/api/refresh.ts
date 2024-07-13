@@ -14,35 +14,13 @@ refresh.post('/', async (c) => {
 	const refreshToken: RefreshToken | undefined = c.req.header('refresh-token');
 
 	if (!refreshToken) {
-		return c.json(
-			{
-				loggedIn: false,
-				error: {
-					message: 'No refresh token provided',
-					code: 401,
-					description: 'You must include a refresh-token in the request headers to access this resource',
-					action: 'Login user to gain a new refresh token',
-				},
-			},
-			401,
-		);
+		return c.redirect('/login');
 	}
 
 	const decodedPayload = await verify(refreshToken, secretKey);
 
 	if (!decodedPayload) {
-		return c.json(
-			{
-				loggedIn: false,
-				error: {
-					message: 'Refresh token invalid',
-					code: 401,
-					description: 'The refresh token provided was not issued by its claimed origin.',
-					action: 'Log in user to gain a new refresh token',
-				},
-			},
-			401,
-		);
+		return c.redirect('/login');
 	}
 
 	const email = decodedPayload.email;
