@@ -13,6 +13,7 @@ export type UserTable = {
 	email: string;
 	password: string;
 	email_verified: boolean;
+	iat: number;
 };
 
 export type EmailVerificationCode = {

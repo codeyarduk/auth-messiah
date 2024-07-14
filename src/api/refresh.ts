@@ -15,22 +15,17 @@ refresh.post('/', async (c) => {
 
 	const decodedPayload = await verify(refreshToken, c.env.SECRET_KEY);
 
-	if (!decodedPayload) {
+	if (!decodedPayload || !decodedPayload.iat) {
 		return c.redirect('/login');
 	}
 
-	const email = decodedPayload.email;
+	const userId = decodedPayload.sub;
 	// Verify Token
-	const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
+	const user = await c.env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first<UserTable>();
 
-	if (!user) {
+	if (!user || decodedPayload.iat < user.iat) {
 		return c.redirect('/login');
 	}
-
-	if (decodedPayload.tbtr < user.tbtr) {
-		return c.redirect('/login');
-	}
-
 	// Logic for creating a new access token should go here
 	setAccessToken(c, user.email, user.email_verified);
 
