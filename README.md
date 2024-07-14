@@ -48,7 +48,7 @@ _Commands to execute to gen tables_
 Users Table
 
 ```
-npx wrangler d1 execute auth-messiah --command='CREATE TABLE users (id TEXT NOT NULL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT, email_verified BOOLEAN DEFAULT false, tbtr INTEGER NOT NULL);'
+npx wrangler d1 execute auth-messiah --command='CREATE TABLE users (id TEXT NOT NULL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password TEXT, email_verified BOOLEAN DEFAULT false, iat INTEGER NOT NULL);'
 ```
 
 Email Verification Table
