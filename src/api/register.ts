@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { generateId } from 'lucia';
 import { hashPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app.d.ts';
 import { validator } from 'hono/validator';
 import { generateEmailVerificationCode } from '../functions/generateEmailCode';
 import { sendEmailOrLog } from '../functions/sendEmailOrLog';
-import { setCookies } from '../functions/setCookies';
+import { setAccessToken } from '../functions/setAccessToken';
+import { setRefreshToken } from '../functions/setRefreshToken';
 
 const register = new Hono<{ Bindings: Bindings }>();
 
@@ -40,14 +40,15 @@ register.post(
 		// Inserts the user into the database if the user does not exist
 		const hashResult = await hashPassword(password);
 
-		const userId = generateId(15);
+		const userId = crypto.randomUUID();
 		const currentDate = Math.floor(Date.now() / 1000); // Note: Add some error handling if all the items taht get entered into the DB aren't correct before being
 		await c.env.DB.prepare(`INSERT INTO users (id, email, password, email_verified, tbtr) VALUES (?, ?, ?, ?, ?) returning *`)
 			.bind(userId, email, hashResult, false, currentDate)
 			.first();
 
 		// Generating new tokens and setting them as cookies
-		setCookies(c, email, false);
+		setAccessToken(c, userId, false);
+		setRefreshToken(c, userId);
 
 		// Verification Email
 		const key = c.env.RESEND_KEY;
