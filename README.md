@@ -79,7 +79,7 @@ create table users
     email TEXT not null unique,
     password TEXT,
     email_verified BOOLEAN DEFAULT false,
-    tbtr INTEGER not null,
+    iat INTEGER not null,
 );
 create table email_verification_codes
 (
@@ -100,14 +100,14 @@ When working with cloudflare workers your enviroment variables should be kept in
 
 The required enviroment variables for you to set are as follows:
 
-Secrets:
-SECRET_KEY=this is the pepper for all jwt's
-RESEND_KEY=for email verfication service
-GOOGLE_ID= 
-GOOGLE_SECRET=
-GITHUB_ID=
-GITHUB_SECRET=
+###### Secrets:
+- SECRET_KEY=this is the pepper for all jwt's
+- RESEND_KEY=for email verfication service
+- GOOGLE_ID= 
+- GOOGLE_SECRET=
+- GITHUB_ID=
+- GITHUB_SECRET=
 
-Global Vars in wrangler.toml:
-SITE_URL=
-REDIRECT_URL=
+###### Global Vars in wrangler.toml:
+- SITE_URL=
+- REDIRECT_URL=
