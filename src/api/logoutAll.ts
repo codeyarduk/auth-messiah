@@ -6,8 +6,8 @@ const logoutAll = new Hono<{ Bindings: Bindings }>();
 
 logoutAll.post('/', async (c) => {
 	const newIAT = Date.now();
-	const uuid = c.get('uuid');
-	await c.env.DB.prepare('UPDATE users SET iat = ? WHERE id = ?').bind(newIAT).bind(uuid).run();
+	const userId = c.get('userId');
+	await c.env.DB.prepare('UPDATE users SET iat = ? WHERE id = ?').bind(newIAT).bind(userId).run();
 	deleteCookie(c, 'accessToken', {
 		path: '/',
 		secure: true,

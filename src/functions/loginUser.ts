@@ -9,10 +9,10 @@ export async function loginUser(c: Context, email: string, db: D1Database) {
 	try {
 		const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 		if (user) {
-			const uuid = user.uuid;
+			const userId = user.id;
 			const verified = user.email_verified;
-			await setAccessToken(c, uuid, verified);
-			await setRefreshToken(c, uuid);
+			await setAccessToken(c, userId, verified);
+			await setRefreshToken(c, userId);
 			return;
 		}
 	} catch (err) {
