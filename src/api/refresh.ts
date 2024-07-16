@@ -6,7 +6,7 @@ import { getCookie } from 'hono/cookie';
 
 const refresh = new Hono<{ Bindings: Bindings; UserTable: UserTable }>();
 
-refresh.post('/', async (c) => {
+refresh.get('/', async (c) => {
 	const refreshToken = getCookie(c, 'refreshToken');
 
 	if (!refreshToken) {
