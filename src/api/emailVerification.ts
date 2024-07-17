@@ -6,6 +6,7 @@ import type { Bindings } from '../app.d.ts';
 import { generateAccessToken } from '../functions/generateAccessToken';
 import { verify } from 'hono/jwt';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
+import { setAccessToken } from '../functions/setAccessToken';
 
 const codeSchema = z.object({
 	code: z.string().min(1),
@@ -48,20 +49,16 @@ verifyEmail.post(
 		}
 
 		await c.env.DB.prepare('UPDATE users SET email_verified = ? WHERE email = ?').bind(true, email).run();
+		const result = await c.env.DB.prepare('SELECT USERID FROM users WHERE email = ?').bind(email).first();
+		const userId = result.id;
 
 		//Set new JWT
-		const accessToken = await generateAccessToken(email, true, c.env.SECRET_KEY);
-
 		deleteCookie(c, 'accessToken', {
 			path: '/',
 			secure: true,
 			domain: c.env.SITE_URL,
 		});
-		setCookie(c, 'accessToken', accessToken, {
-			expires: new Date(Date.now() + 15 * 60 * 1000), // Expires in 15 minutes
-			secure: true,
-			httpOnly: true,
-		});
+		setAccessToken(c, userId, true);
 		console.log('Redirect URL: ' + c.env.REDIRECT_URL + 'SITEURL: ' + c.env.SITE_URL);
 		return c.redirect(c.env.REDIRECT_URL);
 	},

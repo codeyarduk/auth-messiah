@@ -1,16 +1,18 @@
-import { generateId } from 'lucia';
-import { setCookies } from './setCookies';
 import type { UserTable } from '../app.d.ts';
 import { Context } from 'hono';
+import { setAccessToken } from './setAccessToken';
+import { setRefreshToken } from './setRefreshToken';
+
 export async function loginUser(c: Context, email: string, db: D1Database) {
-	console.log('starting login user function');
+	// This function currently is only used for Oauth not for normally loggin in a user
 	// Checks if the user already exists and logs in if they do
 	try {
 		const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<UserTable>();
 		if (user) {
-			console.log('user');
-			console.log('setting cookie as user already exists');
-			await setCookies(c, email, true);
+			const userId = user.id;
+			const verified = user.email_verified;
+			await setAccessToken(c, userId, verified);
+			await setRefreshToken(c, userId);
 			return;
 		}
 	} catch (err) {
@@ -18,12 +20,11 @@ export async function loginUser(c: Context, email: string, db: D1Database) {
 	}
 	// Continue only if this is a new user
 	// Inserts the user into the database if the user does not exist
-	// const hashResult = await hashPassword(password);
-	console.log('creating new user becaues no user exists');
-	const userId = generateId(15);
-	await db.prepare(`INSERT INTO users (id, email, email_verified) VALUES (?, ?, ?) returning *`).bind(userId, email, false).first();
-	console.log('setting the cookie now');
-	await setCookies(c, email, true);
+	const userId = crypto.randomUUID();
+	// User email is verified as they logged in from a supported Oauth provider
+	await db.prepare(`INSERT INTO users (id, email, email_verified) VALUES (?, ?, ?) returning *`).bind(userId, email, true).first();
+	await setAccessToken(c, userId, true);
+	await setRefreshToken(c, userId);
 
 	return;
 }

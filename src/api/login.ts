@@ -3,7 +3,8 @@ import { z } from 'zod';
 import { verifyPassword } from '../functions/hashing';
 import type { Bindings, UserTable } from '../app';
 import { validator } from 'hono/validator';
-import { setCookies } from '../functions/setCookies';
+import { setAccessToken } from '../functions/setAccessToken';
+import { setRefreshToken } from '../functions/setRefreshToken';
 
 const userSchema = z.object({
 	email: z.string().min(1).email(),
@@ -37,7 +38,8 @@ login.post(
 			// return c.json('Invalid email or password', 400);
 			return c.redirect('/login?auth=failed');
 		}
-		setCookies(c, email, user.email_verified);
+		setAccessToken(c, userId, user.email_verified);
+		setRefreshToken(c, userId);
 		return c.redirect('/profile');
 	},
 );

@@ -1,20 +1,13 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../app.d.ts';
-import { verify } from 'hono/jwt';
-import { deleteCookie, getCookie } from 'hono/cookie';
+import { deleteCookie } from 'hono/cookie';
 
 const logoutAll = new Hono<{ Bindings: Bindings }>();
 
 logoutAll.post('/', async (c) => {
-	const accessToken = getCookie(c, 'accessToken');
-	const secret = c.env.SECRET_KEY;
-
-	const decodedPayload = await verify(accessToken, secret);
-
-	const email = decodedPayload.email;
-	const newTbtrValue = Math.floor(Date.now() / 1000);
-
-	await c.env.DB.prepare('UPDATE users SET tbtr = ? WHERE email = ?').bind(newTbtrValue).bind(email).run();
+	const newIAT = Date.now();
+	const userId = c.get('userId');
+	await c.env.DB.prepare('UPDATE users SET iat = ? WHERE id = ?').bind(newIAT).bind(userId).run();
 	deleteCookie(c, 'accessToken', {
 		path: '/',
 		secure: true,
@@ -23,7 +16,6 @@ logoutAll.post('/', async (c) => {
 	deleteCookie(c, 'refreshToken', {
 		path: '/',
 		secure: true,
-		domain: c.env.SITE_URL,
 	});
 
 	return c.json('Logged out all sessions');
