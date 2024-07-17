@@ -6,6 +6,7 @@ import { logout } from './logout';
 import { logoutAll } from './logoutAll';
 import { verifyEmail } from './emailVerification';
 import { google } from './google';
+import { refresh } from './refresh';
 
 // import { loginCheck } from '../middleware/loginCheck';
 
@@ -15,6 +16,7 @@ const api = new Hono();
 // api.use('/register', loginCheck);
 // api.use('/verify-email', loginCheck);
 
+api.route('/refresh', refresh);
 api.route('/register', register);
 api.route('/login', login);
 api.route('/logout', logout);

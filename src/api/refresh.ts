@@ -31,3 +31,5 @@ refresh.get('/', async (c) => {
 
 	return c.json({ response: 'Access Token Returned' });
 });
+
+export { refresh };
