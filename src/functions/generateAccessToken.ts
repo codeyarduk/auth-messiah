@@ -6,7 +6,7 @@ export async function generateAccessToken(uuid: string, verified: boolean, secre
 		iss: 'authMessiah',
 		sub: uuid,
 		exp: Math.floor(Date.now() / 1000) + 60 * 15,
-		iat: Date.now(),
+		iat: Math.floor(Date.now() / 1000),
 		emailVerified: verified,
 	};
 	const token = await sign(payload, secret);
